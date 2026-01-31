@@ -1,0 +1,51 @@
+{
+  "name": "HortiPack Optimizer — Optimasi Kemasan Hortikultura",
+  "short_name": "HortiPack",
+  "description": "Aplikasi optimasi desain kemasan corrugated box untuk produk hortikultura. McKee BCT, 5-Stage Correction, Respiration-Driven Ventilation, TCI Optimization.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#06101F",
+  "background_color": "#06101F",
+  "lang": "id",
+  "dir": "ltr",
+  "categories": ["education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "HortiPack Optimizer Dashboard"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Buka Optimizer",
+      "short_name": "Optimize",
+      "url": "./index.html",
+      "description": "Langsung ke dashboard optimasi"
+    }
+  ]
+}

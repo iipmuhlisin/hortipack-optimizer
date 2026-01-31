@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#06101F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HortiPack">
+<meta name="description" content="Optimasi desain kemasan corrugated box untuk produk hortikultura — McKee BCT, TCI, Sensitivity Analysis">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>HORTI-PACK OPTIMIZER v3.0 — Offline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root {
+  --bg:#06101F; --card:#0C1A2E; --card2:#0F2038; --input:#091526;
+  --border:#1B3255; --borderL:#254170;
+  --accent:#00E09E; --accentD:rgba(0,224,158,.12);
+  --orange:#FF7A3D; --orangeD:rgba(255,122,61,.15);
+  --warn:#FFB800; --warnD:rgba(255,184,0,.12);
+  --danger:#FF3B5C; --dangerD:rgba(255,59,92,.12);
+  --blue:#3B82F6; --blueD:rgba(59,130,246,.12);
+  --purple:#A78BFA; --purpleD:rgba(167,139,250,.12);
+  --cyan:#22D3EE;
+  --t1:#EDF2FA; --t2:#8DA0BE; --t3:#536B8A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:'Outfit',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.mono{font-family:'JetBrains Mono',monospace}
+button{cursor:pointer;border:none;background:none;color:inherit;font-family:inherit}
+input[type=number]{-moz-appearance:textfield}
+input::-webkit-inner-spin-button{opacity:1}
+input:focus,select:focus{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accentD);outline:none}
+
+/* HEADER */
+.hdr{padding:12px 24px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,var(--card),var(--bg));display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.hdr h1{font-size:20px;font-weight:800;display:flex;align-items:center;gap:8px}
+.hdr .brand{background:linear-gradient(135deg,var(--accent),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr .ver{font-size:9px;padding:2px 8px;border-radius:4px;background:var(--purpleD);color:var(--purple);font-weight:600;letter-spacing:.5px}
+.hdr .sub{font-size:10px;color:var(--t3);margin-top:2px;letter-spacing:1px}
+
+/* LAYOUT */
+.layout{display:flex;min-height:calc(100vh - 52px)}
+.sidebar{width:320px;min-width:320px;border-right:1px solid var(--border);overflow-y:auto;padding:12px;background:var(--card)}
+.main{flex:1;overflow-y:auto;padding:16px 20px}
+
+/* SIDEBAR SECTIONS */
+.sec-hdr{font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;padding:0 2px}
+.sec-hdr:first-child{margin-top:0}
+
+/* PRESET BUTTONS */
+.presets{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.presets .cat{font-size:9px;font-weight:600;width:100%;padding:3px 6px;border-radius:4px;margin-top:4px}
+.preset-btn{padding:4px 8px;font-size:10px;border-radius:5px;border:1px solid var(--border);background:var(--input);transition:.15s;display:flex;align-items:center;gap:3px}
+.preset-btn:hover{border-color:var(--accent);background:var(--accentD)}
+.preset-btn.active{border-color:var(--accent);background:var(--accentD);color:var(--accent)}
+
+/* INPUTS */
+.inp-grp{margin-bottom:8px}
+.inp-grp label{display:block;font-size:9px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.inp-row{display:flex;align-items:center;gap:6px}
+.inp{width:100%;padding:6px 9px;background:var(--input);border:1px solid var(--border);border-radius:6px;color:var(--t1);font-family:'JetBrains Mono',monospace;font-size:12px}
+.inp-unit{font-size:10px;color:var(--t3);white-space:nowrap}
+
+/* MATERIAL TABS */
+.wall-tabs{display:flex;gap:4px;margin-bottom:8px}
+.wall-tab{flex:1;padding:6px;font-size:10px;font-weight:600;border-radius:6px;text-align:center;border:1px solid var(--border);transition:.15s}
+.wall-tab:hover{border-color:var(--borderL)}
+.wall-tab.active{background:var(--accentD);border-color:var(--accent)}
+
+/* MATERIAL LIST */
+.mat-list{display:flex;flex-direction:column;gap:3px;max-height:200px;overflow-y:auto}
+.mat-btn{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--input);transition:.15s;text-align:left}
+.mat-btn:hover{border-color:var(--borderL)}
+.mat-btn.active{border-color:var(--accent);background:var(--accentD)}
+
+/* BOX SIZE */
+.box-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.box-btn{padding:7px;border-radius:6px;border:1.5px solid var(--border);background:var(--input);text-align:center;transition:.15s;position:relative}
+.box-btn:hover{border-color:var(--borderL)}
+.box-btn.active{border-color:var(--accent);background:var(--accentD)}
+.box-btn .auto-badge{position:absolute;top:2px;right:4px;font-size:7px;background:var(--accent);color:var(--bg);padding:1px 4px;border-radius:3px;font-weight:700}
+
+/* LOAD PANEL */
+.load-panel{background:var(--dangerD);border:1px solid rgba(255,59,92,.25);border-radius:8px;padding:10px;margin:8px 0}
+.load-panel .title{font-size:10px;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.load-row{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
+.load-row .lbl{color:var(--t2)}
+.load-row .val{font-family:'JetBrains Mono',monospace;font-weight:600}
+
+/* SF BAR */
+.sf-bar-wrap{margin-top:8px;background:var(--card2);border-radius:4px;overflow:hidden;height:18px;position:relative;border:1px solid var(--border)}
+.sf-bar{height:100%;transition:width .3s;border-radius:4px}
+.sf-bar-marker{position:absolute;top:0;bottom:0;width:1px;background:white;opacity:.5}
+
+/* METRIC CARDS */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:16px}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.metric .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.metric .icon{font-size:18px}
+.metric .label{font-size:10px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.metric .val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;line-height:1.1}
+.metric .unit{font-size:11px;color:var(--t2);margin-top:2px}
+.metric .sub{font-size:9px;color:var(--t3);margin-top:2px}
+
+/* MID ROW */
+.mid-row{display:grid;grid-template-columns:minmax(320px,auto) 1fr;gap:16px;margin-bottom:16px;align-items:start}
+.box-viz{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+.spec-table{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;max-height:640px;overflow-y:auto}
+.spec-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)}
+.spec-row .lbl{font-size:11px;color:var(--t2)}
+.spec-row .val{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.spec-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:8px 0 4px;margin-top:4px}
+
+/* CHART */
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
+.chart-title{font-size:13px;font-weight:700;margin-bottom:12px}
+.chart-canvas{width:100%;height:320px;position:relative}
+#optChart{width:100%!important;height:100%!important}
+
+/* COMPARE */
+.compare-section{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden}
+.compare-toggle{width:100%;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);cursor:pointer}
+.compare-toggle:hover{background:var(--card2)}
+.compare-body{overflow-x:auto;padding:12px}
+.cmp-table{border-collapse:collapse;font-size:11px;width:100%;min-width:900px}
+.cmp-table th,.cmp-table td{padding:6px 10px;text-align:center;border:1px solid var(--border);white-space:nowrap}
+.cmp-table th{background:var(--card2);font-weight:600;position:sticky;top:0;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+.cmp-table td{font-family:'JetBrains Mono',monospace;font-size:11px}
+.cmp-table .row-hdr{text-align:left;font-family:'Outfit',sans-serif;font-weight:600;color:var(--t2);background:var(--card2)}
+.cmp-table .section-row td{background:var(--card2);font-family:'Outfit',sans-serif;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);text-align:left}
+.sf-ok{color:var(--accent);font-weight:700}
+.sf-warn{color:var(--warn);font-weight:700}
+.sf-bad{color:var(--danger);font-weight:700}
+.cost-best{background:rgba(0,224,158,.1)!important;color:var(--accent);font-weight:700}
+
+/* WARNINGS */
+.warnings{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.warn-box{padding:12px 16px;border-radius:8px;font-size:12px}
+.warn-box.red{background:var(--dangerD);border:1px solid rgba(255,59,92,.3);color:#ffb0b0}
+.warn-box.orange{background:var(--orangeD);border:1px solid rgba(255,122,61,.3);color:#ffd0b0}
+.warn-box.yellow{background:var(--warnD);border:1px solid rgba(255,184,0,.3);color:#ffe8a0}
+.warn-box strong{display:block;margin-bottom:4px;font-size:13px}
+
+/* FOOTER */
+.footer{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
+.footer-col h4{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin-bottom:8px}
+.footer-item{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
+.footer-item .lbl{color:var(--t2)}
+.footer-item .val{font-family:'JetBrains Mono',monospace;font-weight:600}
+
+/* QUICK SELECT */
+.quick-sel{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.quick-btn{padding:2px 8px;font-size:10px;border-radius:4px;border:1px solid var(--border);background:var(--input);font-family:'JetBrains Mono',monospace}
+.quick-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* RESP INDICATOR */
+.resp-ind{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;margin-left:4px}
+
+/* CHART LEGEND */
+.chart-legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:10px;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)}
+.legend-dot{width:12px;height:3px;border-radius:1px}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .layout{flex-direction:column}
+  .sidebar{width:100%;min-width:auto;border-right:none;border-bottom:1px solid var(--border)}
+  .mid-row{grid-template-columns:1fr}
+  .footer{grid-template-columns:1fr 1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div>
+    <h1><span class="brand">HORTI-PACK</span> <span style="font-weight:400;color:var(--t2);font-size:18px">OPTIMIZER</span> <span class="ver">v3.0 OFFLINE</span></h1>
+    <p class="sub">McKee BCT · 5-Stage Correction · Respiration-Driven Ventilation · TCI Optimization · Sensitivity Analysis</p>
+  </div>
+  <div style="text-align:right">
+    <div class="mono" style="font-size:11px;color:var(--t2)" id="clockDisplay"></div>
+    <div style="font-size:9px;color:var(--t3)">IPB University · Disertasi Doktoral</div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar"></aside>
+  <!-- MAIN -->
+  <main class="main" id="mainArea"></main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA & CONSTANTS
+// ═══════════════════════════════════════════════════════════════
+const WALL_TYPES=[
+  {id:"single",label:"Single Wall",icon:"▮",desc:"1 fluting, 2 liner",color:"var(--accent)"},
+  {id:"double",label:"Double Wall",icon:"▮▮",desc:"2 fluting, 3 liner",color:"var(--warn)"},
+  {id:"triple",label:"Triple Wall",icon:"▮▮▮",desc:"3 fluting, 4 liner",color:"var(--orange)"},
+];
+const MATERIALS=[
+  {id:"E1",wall:"single",flute:"E-Flute",caliper:1.6,ECT:2.8,grammage:380,costM2:16000,bst:1800,desc:"Tipis, display packaging"},
+  {id:"B1",wall:"single",flute:"B-Flute",caliper:2.5,ECT:3.6,grammage:450,costM2:18500,bst:2400,desc:"Serbaguna, die-cutting baik"},
+  {id:"C1",wall:"single",flute:"C-Flute",caliper:3.66,ECT:4.4,grammage:550,costM2:22000,bst:3200,desc:"Standar distribusi"},
+  {id:"A1",wall:"single",flute:"A-Flute",caliper:4.8,ECT:5.2,grammage:630,costM2:25000,bst:3800,desc:"Cushioning tinggi"},
+  {id:"BE2",wall:"double",flute:"BE-Flute",caliper:4.8,ECT:6.5,grammage:780,costM2:32000,bst:5200,desc:"Ringan, proteksi sedang"},
+  {id:"BC2",wall:"double",flute:"BC-Flute",caliper:6.5,ECT:8.0,grammage:900,costM2:38000,bst:7500,desc:"Standar industri ekspor"},
+  {id:"AC2",wall:"double",flute:"AC-Flute",caliper:8.0,ECT:9.5,grammage:1050,costM2:42000,bst:8800,desc:"Heavy-duty distribusi"},
+  {id:"AB2",wall:"double",flute:"AB-Flute",caliper:8.5,ECT:10.2,grammage:1120,costM2:45000,bst:9600,desc:"Proteksi maksimal"},
+  {id:"BCB3",wall:"triple",flute:"BCB-Flute",caliper:10.0,ECT:11.5,grammage:1200,costM2:52000,bst:12500,desc:"Medium heavy-duty"},
+  {id:"ACA3",wall:"triple",flute:"ACA-Flute",caliper:12.7,ECT:14.0,grammage:1400,costM2:62000,bst:16000,desc:"Pengganti kayu, ekspor"},
+  {id:"AAA3",wall:"triple",flute:"AAA-Flute",caliper:15.0,ECT:16.5,grammage:1650,costM2:72000,bst:19500,desc:"Ultra heavy-duty"},
+];
+const BOX_SIZES=[
+  {id:0,tag:"S",name:"Kecil",L:300,W:200,H:100},
+  {id:1,tag:"M",name:"Sedang",L:400,W:300,H:200},
+  {id:2,tag:"L",name:"Besar",L:500,W:400,H:300},
+  {id:3,tag:"XL",name:"Ekstra Besar",L:600,W:500,H:400},
+];
+const PRESET_CATS=[
+  {id:"buah",label:"🍎 Buah-Buahan",color:"var(--accent)",items:[
+    {name:"Tomat",w:5,L:250,W:180,H:80,r:15,maxDia:30,icon:"🍅"},
+    {name:"Mangga",w:8,L:350,W:250,H:150,r:25,maxDia:50,icon:"🥭"},
+    {name:"Stroberi",w:2,L:220,W:160,H:60,r:60,maxDia:18,icon:"🍓"},
+    {name:"Apel",w:10,L:350,W:280,H:180,r:5,maxDia:50,icon:"🍎"},
+    {name:"Pisang",w:6,L:380,W:250,H:160,r:20,maxDia:30,icon:"🍌"},
+    {name:"Jeruk",w:8,L:350,W:280,H:160,r:8,maxDia:45,icon:"🍊"},
+    {name:"Pepaya",w:12,L:450,W:350,H:250,r:18,maxDia:50,icon:"🫒"},
+    {name:"Durian",w:15,L:450,W:380,H:280,r:12,maxDia:50,icon:"🍈"},
+  ]},
+  {id:"sayur",label:"🥬 Sayuran",color:"var(--blue)",items:[
+    {name:"Brokoli",w:4,L:280,W:200,H:120,r:40,maxDia:40,icon:"🥦"},
+    {name:"Bawang Daun",w:3,L:380,W:220,H:100,r:28,maxDia:50,icon:"🌿"},
+    {name:"Bawang Merah",w:10,L:300,W:220,H:140,r:6,maxDia:20,icon:"🧅"},
+    {name:"Bawang Putih",w:8,L:280,W:200,H:120,r:4,maxDia:15,icon:"🧄"},
+    {name:"Seledri",w:3,L:380,W:200,H:100,r:35,maxDia:50,icon:"🌱"},
+    {name:"Kubis",w:10,L:350,W:280,H:200,r:10,maxDia:50,icon:"🥬"},
+    {name:"Cabe Hijau",w:5,L:300,W:220,H:120,r:18,maxDia:15,icon:"🫑"},
+    {name:"Cabe Keriting",w:4,L:280,W:200,H:100,r:15,maxDia:8,icon:"🌶️"},
+    {name:"Wortel",w:10,L:350,W:250,H:150,r:10,maxDia:25,icon:"🥕"},
+    {name:"Kentang",w:15,L:380,W:280,H:180,r:3,maxDia:40,icon:"🥔"},
+  ]},
+  {id:"biji",label:"🫘 Kacang & Biji",color:"var(--warn)",items:[
+    {name:"Kedelai",w:12,L:300,W:220,H:150,r:4,maxDia:5,icon:"🫘"},
+    {name:"Kacang Tanah",w:10,L:300,W:220,H:140,r:3,maxDia:5,icon:"🥜"},
+    {name:"Kopi",w:8,L:280,W:200,H:120,r:2,maxDia:5,icon:"☕"},
+  ]}
+];
+const ALL_PRESETS=PRESET_CATS.flatMap(c=>c.items);
+const SF_MIN=1.5;
+
+// TRANSPORT MODES — dynamic amplification factors (ref: ASTM D4169)
+const TRANSPORT_MODES=[
+  {id:'manual',label:'🤲 Manual',factor:1.2,desc:'Angkut tangan/gerobak'},
+  {id:'truck',label:'🚚 Truk',factor:1.6,desc:'Jalan raya standar'},
+  {id:'ship',label:'🚢 Kapal Laut',factor:2.2,desc:'Gelombang laut'},
+  {id:'rail',label:'🚂 Kereta Api',factor:2.7,desc:'Shunting impact'},
+];
+
+// STACKING PATTERNS
+const STACK_PATTERNS=[
+  {id:'column',label:'Kolom',factor:1.0,desc:'Tumpuk lurus (aligned)'},
+  {id:'interlock',label:'Interlock',factor:0.55,desc:'Tumpuk silang (-45%)'},
+];
+
+// CREEP MODEL: CF = 0.80 × days^(-0.069) — empirical power law (ref: Nordstrand 2003)
+function creepFactor(days){
+  if(days<=0)return 0.80;
+  return 0.80*Math.pow(Math.max(1,days),-0.069);
+}
+
+// RESPIRATION-BASED VENTILATION MODEL
+// Required vent area from respiratory heat removal via natural convection
+// q_heat = resp × weight × 10.7 / 3600 [W] (respiratory heat coeff: 10.7 J/mL CO₂)
+// Q_air = q_heat / (ρ_air × Cp × ΔT) [m³/s]
+// A_vent = Q_air / (Cd × v) [m²]
+// ρ_air=1.2 kg/m³, Cp=1005 J/(kg·K), Cd=0.6, v_natural=0.3 m/s
+function calcRespVentArea(respRate,weight,deltaT){
+  if(respRate<=0||weight<=0||deltaT<=0)return 0;
+  const qHeat=respRate*weight*10.7/3600; // Watts
+  const qAir=qHeat/(1.2*1005*deltaT);    // m³/s
+  return qAir/(0.6*0.3);                  // m² required vent area
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let S={
+  wt:5, pL:250, pW:180, pH:80, resp:15,
+  stack:8, matId:"C1", boxOverride:-1,
+  activePreset:0, maxDia:30,
+  wallFilter:"single", showCompare:false,
+  // NEW: Enhanced engineering parameters
+  transport:'truck',       // transport mode
+  storageDays:7,           // storage duration (days) for creep
+  stackPattern:'column',   // stacking pattern
+  palletOverhang:0,        // pallet overhang percentage (0-30)
+  humidity:0.60,           // humidity correction factor (0.5-0.9)
+  tempDeltaT:3,            // allowed temperature rise °C (for resp-based vent)
+  showSensitivity:false,   // sensitivity analysis toggle
+};
+
+// ═══════════════════════════════════════════════════════════════
+// ENGINEERING CALCULATIONS
+// ═══════════════════════════════════════════════════════════════
+function selectBox(pL,pW,pH){
+  const cl=10;
+  for(const b of BOX_SIZES) if(pL+2*cl<=b.L&&pW+2*cl<=b.W&&pH+2*cl<=b.H) return b;
+  return BOX_SIZES[3];
+}
+function getBox(){return S.boxOverride>=0?BOX_SIZES[S.boxOverride]:selectBox(S.pL,S.pW,S.pH)}
+function getMat(){return MATERIALS.find(m=>m.id===S.matId)}
+
+function calcDesign(box,mat,d,weight,stacking,resp,cfg){
+  const{L,W,H}=box;
+  const transport=TRANSPORT_MODES.find(t=>t.id===cfg.transport)||TRANSPORT_MODES[1];
+  const stackPat=STACK_PATTERNS.find(p=>p.id===cfg.stackPattern)||STACK_PATTERNS[0];
+  const totalA=2*(L*W+L*H+W*H);           // total surface mm²
+  const ventPanelA=2*(L*H+W*H);           // vertical panel area (where holes go)
+  const ventPanelA_m2=ventPanelA/1e6;
+  const holeA=Math.PI*(d/2)**2;            // single hole area mm²
+
+  // ── VENTILATION: Respiration-based requirement ──
+  const respVentArea=calcRespVentArea(resp,weight,cfg.tempDeltaT)*1e6; // m²→mm²
+  const respVentRatio=ventPanelA>0?respVentArea/ventPanelA:0;
+  const geoVentTarget=0.05; // minimum 5% geometric baseline
+  const ventTarget=Math.max(geoVentTarget,respVentRatio,0.02);
+  const ventTargetCapped=Math.min(ventTarget,0.25); // cap at 25%
+
+  // ── HOLE COUNT from ventilation target (consistent basis: vertical panels only) ──
+  const nReq=Math.ceil(ventTargetCapped*ventPanelA/holeA);
+  const margin=Math.max(d/2+5,12);
+  const gap=Math.max(.75*d,10);
+  const pitch=d+gap;
+  const panelCalc=(pw,ph)=>{
+    const aw=pw-2*margin,ah=ph-2*margin;
+    if(aw<d||ah<d)return{cols:0,rows:0,max:0};
+    const cols=Math.max(1,Math.floor(aw/pitch)+1);
+    const rows=Math.max(1,Math.floor(ah/pitch)+1);
+    return{cols,rows,max:cols*rows};
+  };
+  const longP=panelCalc(L,H),shortP=panelCalc(W,H);
+  const maxT=2*longP.max+2*shortP.max;
+  const feasible=nReq<=maxT&&maxT>0;
+  const actual=feasible?nReq:maxT;
+  const ventArea=actual*holeA;
+  const ventRatio=ventPanelA>0?ventArea/ventPanelA:0; // FIXED: consistent basis
+
+  // ── McKee BCT with comprehensive correction chain ──
+  const ECT_N=mat.ECT*1000;        // kN/m → N/m
+  const Z_m=mat.caliper/1000;       // mm → m
+  const P_m=2*(L+W)/1000;           // perimeter in m
+  const bctBase=5.87*ECT_N*Math.sqrt(Z_m*P_m);
+
+  // Correction 1: Ventilation opening reduction
+  const ventCorr=Math.max(0.3,1-1.8*ventRatio);
+  const bctVent=bctBase*ventCorr;
+
+  // Correction 2: Humidity (user-adjustable, default 0.60 for 90%RH)
+  const humidCorr=cfg.humidity;
+  const bctHumid=bctVent*humidCorr;
+
+  // Correction 3: Creep — time-dependent loss (SEPARATE from humidity)
+  const cF=creepFactor(cfg.storageDays);
+  const bctCreep=bctHumid*cF;
+
+  // Correction 4: Stacking pattern (interlock vs column)
+  const stackCorr=stackPat.factor;
+  const bctStack=bctCreep*stackCorr;
+
+  // Correction 5: Pallet overhang
+  const overhangCorr=Math.max(0.5,1-0.6*(cfg.palletOverhang/100));
+  const bctEff=bctStack*overhangCorr;
+
+  // ── LOAD ANALYSIS ──
+  const wKemasan=mat.grammage*(totalA/1e6)/1000; // kg
+  const wTotal=weight+wKemasan;
+  const appForceStatic=Math.max(stacking-1,1)*wTotal*9.81;
+  const dynamicF=transport.factor;
+  const appForce=appForceStatic*dynamicF;
+  const sf=appForce>0?bctEff/appForce:99;
+  const maxStack=wTotal>0?Math.floor(bctEff/(wTotal*9.81*dynamicF))+1:99;
+
+  // ── BURST STRENGTH ANALYSIS ──
+  // Internal pressure from product weight on smallest wall panel
+  const minWallA_m2=Math.min(L*W,L*H,W*H)/1e6;
+  const pInternal=minWallA_m2>0?(weight*9.81)/minWallA_m2:0; // Pa
+  const burstSF=pInternal>0?mat.bst/pInternal:99;
+
+  // ── COST MODEL ──
+  const aM2=totalA/1e6;
+  const matCost=aM2*mat.costM2;
+  const thickPen=1+(mat.caliper-1.6)/15;
+  const holeCost=actual*(500/Math.sqrt(Math.max(d,.5))+25)*thickPen;
+  const totalCost=matCost+holeCost;
+
+  // ── POST-HARVEST LOSS COST (TCI component) ──
+  // Rough model: failure probability → loss cost
+  const failProb=sf<1.0?0.80:sf<1.5?0.30*(1.5-sf)/0.5:sf<2.0?0.05*(2.0-sf)/0.5:0.01;
+  const productValue=weight*15000; // Rp15.000/kg average horticultural value
+  const lossCost=failProb*productValue;
+  const tci=totalCost+lossCost; // Total Cost Index
+
+  return{
+    d,nReq,actual,maxT,feasible,ventArea,ventRatio,ventTarget:ventTargetCapped,
+    respVentRatio,pitch,margin,
+    bctBase,bctVent,bctHumid,bctCreep,bctStack,bctEff,
+    ventCorr,humidCorr,cF,stackCorr,overhangCorr,
+    appForceStatic,appForce,dynamicF,sf,maxStack,
+    burstSF,pInternal,
+    matCost,holeCost,totalCost,lossCost,tci,failProb,
+    wKemasan,wTotal,aM2,totalA,ventPanelA,longP,shortP
+  };
+}
+
+function optimize(box,mat,weight,stacking,maxDia,resp,cfg){
+  const sweep=[];
+  for(let d=.5;d<=50;d+=.5)sweep.push(calcDesign(box,mat,d,weight,stacking,resp,cfg));
+  const allowed=sweep.filter(s=>s.d<=maxDia);
+  const valid=allowed.filter(s=>s.feasible&&s.sf>=SF_MIN&&s.ventRatio>=s.ventTarget*0.95);
+  let opt;
+  if(valid.length>0){
+    if(maxDia<=10) opt=valid.reduce((a,b)=>a.d>b.d?a:b);
+    else opt=valid.reduce((a,b)=>a.tci<b.tci?a:b); // optimize TCI not just material cost
+  }else{
+    const feas=allowed.filter(s=>s.feasible);
+    if(feas.length>0){
+      opt=feas.reduce((a,b)=>{
+        const maxC=allowed[allowed.length-1].tci||1;
+        const sa=Math.min(a.sf/SF_MIN,1)*.4+Math.min(a.ventRatio/Math.max(a.ventTarget,.01),1)*.35+(1-a.tci/maxC)*.25;
+        const sb=Math.min(b.sf/SF_MIN,1)*.4+Math.min(b.ventRatio/Math.max(b.ventTarget,.01),1)*.35+(1-b.tci/maxC)*.25;
+        return sa>=sb?a:b;
+      });
+    }else opt=allowed[allowed.length-1]||sweep[sweep.length-1];
+  }
+  return{sweep,opt};
+}
+
+function compareMaterials(box,weight,stacking,maxDia,resp,cfg){
+  return MATERIALS.map(mat=>{const{opt}=optimize(box,mat,weight,stacking,maxDia,resp,cfg);return{mat,opt}});
+}
+
+// ── SENSITIVITY ANALYSIS ──
+function sensitivityAnalysis(box,mat,weight,stacking,maxDia,resp,cfg){
+  const baseline=optimize(box,mat,weight,stacking,maxDia,resp,cfg).opt;
+  if(!baseline)return null;
+  const tests=[];
+  // ECT ±10%
+  const matLow={...mat,ECT:mat.ECT*0.9};
+  const matHigh={...mat,ECT:mat.ECT*1.1};
+  const ectL=optimize(box,matLow,weight,stacking,maxDia,resp,cfg).opt;
+  const ectH=optimize(box,matHigh,weight,stacking,maxDia,resp,cfg).opt;
+  tests.push({param:'ECT',unit:'kN/m',base:mat.ECT,low:mat.ECT*0.9,high:mat.ECT*1.1,pct:10,
+    sfBase:baseline.sf,sfLow:ectL?ectL.sf:0,sfHigh:ectH?ectH.sf:0,
+    costBase:baseline.tci,costLow:ectL?ectL.tci:0,costHigh:ectH?ectH.tci:0});
+  // Weight ±15%
+  const wtL=optimize(box,mat,weight*0.85,stacking,maxDia,resp,cfg).opt;
+  const wtH=optimize(box,mat,weight*1.15,stacking,maxDia,resp,cfg).opt;
+  tests.push({param:'Berat Produk',unit:'kg',base:weight,low:weight*0.85,high:weight*1.15,pct:15,
+    sfBase:baseline.sf,sfLow:wtL?wtL.sf:0,sfHigh:wtH?wtH.sf:0,
+    costBase:baseline.tci,costLow:wtL?wtL.tci:0,costHigh:wtH?wtH.tci:0});
+  // Humidity 50-70%
+  const cfgHumL={...cfg,humidity:0.50};const cfgHumH={...cfg,humidity:0.70};
+  const humL=optimize(box,mat,weight,stacking,maxDia,resp,cfgHumL).opt;
+  const humH=optimize(box,mat,weight,stacking,maxDia,resp,cfgHumH).opt;
+  tests.push({param:'Faktor Humidity',unit:'',base:cfg.humidity,low:0.50,high:0.70,pct:null,
+    sfBase:baseline.sf,sfLow:humL?humL.sf:0,sfHigh:humH?humH.sf:0,
+    costBase:baseline.tci,costLow:humL?humL.tci:0,costHigh:humH?humH.tci:0});
+  // Stack ±1
+  const skL=optimize(box,mat,weight,Math.max(1,stacking-1),maxDia,resp,cfg).opt;
+  const skH=optimize(box,mat,weight,stacking+1,maxDia,resp,cfg).opt;
+  tests.push({param:'Tumpukan',unit:'lapis',base:stacking,low:Math.max(1,stacking-1),high:stacking+1,pct:null,
+    sfBase:baseline.sf,sfLow:skL?skL.sf:0,sfHigh:skH?skH.sf:0,
+    costBase:baseline.tci,costLow:skL?skL.tci:0,costHigh:skH?skH.tci:0});
+  // Storage Days
+  const cfgDL={...cfg,storageDays:Math.max(1,cfg.storageDays-7)};
+  const cfgDH={...cfg,storageDays:cfg.storageDays+14};
+  const dayL=optimize(box,mat,weight,stacking,maxDia,resp,cfgDL).opt;
+  const dayH=optimize(box,mat,weight,stacking,maxDia,resp,cfgDH).opt;
+  tests.push({param:'Durasi Simpan',unit:'hari',base:cfg.storageDays,low:cfgDL.storageDays,high:cfgDH.storageDays,pct:null,
+    sfBase:baseline.sf,sfLow:dayL?dayL.sf:0,sfHigh:dayH?dayH.sf:0,
+    costBase:baseline.tci,costLow:dayL?dayL.tci:0,costHigh:dayH?dayH.tci:0});
+  return{baseline,tests};
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+const fN=(n,d=0)=>n!=null?Number(n).toLocaleString('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d}):'-';
+const fRp=n=>`Rp ${fN(n)}`;
+const sfClass=sf=>sf>=2?'sf-ok':sf>=1.5?'sf-warn':'sf-bad';
+const sfColor=sf=>sf>=2?'var(--accent)':sf>=1.5?'var(--warn)':'var(--danger)';
+const sfText=sf=>sf>=2?'AMAN':sf>=1.5?'PERHATIAN':'TIDAK AMAN';
+const respStat2Color=r=>r<10?'var(--accent)':r<30?'var(--warn)':r<60?'var(--orange)':'var(--danger)';
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+function renderSidebar(){
+  const mat=getMat(),box=getBox();
+  const cfg={transport:S.transport,storageDays:S.storageDays,stackPattern:S.stackPattern,palletOverhang:S.palletOverhang,humidity:S.humidity,tempDeltaT:S.tempDeltaT};
+  const{opt}=optimize(box,mat,S.wt,S.stack,S.maxDia,S.resp,cfg);
+  const wt=WALL_TYPES.find(w=>w.id===mat.wall);
+  const respStat=S.resp<10?['Rendah','var(--accent)']:S.resp<30?['Sedang','var(--warn)']:S.resp<60?['Tinggi','var(--orange)']:['Sangat Tinggi','var(--danger)'];
+  const transport=TRANSPORT_MODES.find(t=>t.id===S.transport);
+  let h='';
+  // PRESETS
+  h+=`<div class="sec-hdr">Preset Produk</div><div class="presets">`;
+  let idx=0;
+  for(const cat of PRESET_CATS){
+    h+=`<div class="cat" style="color:${cat.color};background:${cat.color}15">${cat.label}</div>`;
+    for(const p of cat.items){
+      h+=`<button class="preset-btn${S.activePreset===idx?' active':''}" onclick="applyPreset(${idx})">${p.icon} ${p.name}</button>`;
+      idx++;
+    }
+  }
+  h+=`</div>`;
+  // INPUTS
+  h+=`<div class="sec-hdr">Input Produk</div>`;
+  h+=inputGrp('Berat Total',S.wt,'wt','kg','number',{min:.1,max:100,step:.5});
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">`;
+  h+=inputGrp('Panjang',S.pL,'pL','mm','number',{min:10,max:1000,step:10},true);
+  h+=inputGrp('Lebar',S.pW,'pW','mm','number',{min:10,max:1000,step:10},true);
+  h+=inputGrp('Tinggi',S.pH,'pH','mm','number',{min:10,max:1000,step:10},true);
+  h+=`</div>`;
+  h+=`<div class="inp-grp"><label>Laju Respirasi</label><div class="inp-row"><input class="inp" type="number" value="${S.resp}" min="0" max="200" step="1" onchange="upd('resp',+this.value)"><span class="inp-unit">mL CO₂/kg·jam</span><span class="resp-ind" style="background:${respStat[1]}20;color:${respStat[1]}">${respStat[0]}</span></div></div>`;
+  h+=`<div class="inp-grp"><label>ΔT Maks (kenaikan suhu diizinkan)</label><div class="inp-row"><input class="inp" type="number" value="${S.tempDeltaT}" min="1" max="10" step="0.5" onchange="upd('tempDeltaT',+this.value)"><span class="inp-unit">°C</span></div></div>`;
+  // STACKING & TRANSPORT
+  h+=`<div class="sec-hdr">Kondisi Distribusi</div>`;
+  h+=inputGrp('Tumpukan',S.stack,'stack','lapis','number',{min:1,max:20,step:1});
+  // Transport mode
+  h+=`<div class="inp-grp"><label>Moda Transportasi</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">`;
+  for(const t of TRANSPORT_MODES){
+    const sel=S.transport===t.id;
+    h+=`<button style="padding:5px 6px;font-size:10px;border-radius:5px;border:1px solid ${sel?'var(--cyan)':'var(--border)'};background:${sel?'rgba(34,211,238,.1)':'var(--input)'};color:${sel?'var(--cyan)':'var(--t2)'};text-align:left" onclick="upd('transport','${t.id}')"><div style="font-weight:600">${t.label}</div><div style="font-size:8px;color:var(--t3)">${t.desc} (×${t.factor})</div></button>`;
+  }
+  h+=`</div></div>`;
+  // Stacking pattern
+  h+=`<div class="inp-grp"><label>Pola Tumpukan</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">`;
+  for(const p of STACK_PATTERNS){
+    const sel=S.stackPattern===p.id;
+    h+=`<button style="padding:5px 6px;font-size:10px;border-radius:5px;border:1px solid ${sel?'var(--purple)':'var(--border)'};background:${sel?'rgba(167,139,250,.1)':'var(--input)'};color:${sel?'var(--purple)':'var(--t2)'}" onclick="upd('stackPattern','${p.id}')"><div style="font-weight:600">${p.label}</div><div style="font-size:8px;color:var(--t3)">${p.desc}</div></button>`;
+  }
+  h+=`</div></div>`;
+  // Storage & Environment
+  h+=`<div class="sec-hdr">Penyimpanan & Lingkungan</div>`;
+  h+=inputGrp('Durasi Simpan',S.storageDays,'storageDays','hari','number',{min:1,max:90,step:1});
+  h+=`<div style="font-size:9px;color:var(--t3);margin:-4px 0 6px 2px">Creep Factor: <span class="mono" style="color:var(--cyan)">${creepFactor(S.storageDays).toFixed(3)}</span> (${S.storageDays} hari)</div>`;
+  h+=`<div class="inp-grp"><label>Humidity Factor</label><div class="inp-row"><input class="inp" type="range" value="${S.humidity}" min="0.40" max="0.90" step="0.01" style="padding:2px" oninput="upd('humidity',+this.value)"><span class="inp-unit mono" style="min-width:36px">${(S.humidity*100).toFixed(0)}%</span></div></div>`;
+  h+=`<div style="font-size:9px;color:var(--t3);margin:-4px 0 6px 2px">RH rendah → faktor tinggi (0.85); RH 90%+ → faktor rendah (0.50)</div>`;
+  h+=inputGrp('Pallet Overhang',S.palletOverhang,'palletOverhang','%','number',{min:0,max:30,step:1});
+  // LOAD PANEL
+  if(opt){
+    const sfVal=opt.sf;
+    const pct=Math.min(sfVal/3*100,100);
+    const barColor=sfColor(sfVal);
+    h+=`<div class="load-panel"><div class="title">⚠ Beban Box Terbawah</div>`;
+    h+=loadRow('Berat produk',`${fN(S.wt,1)} kg`);
+    h+=loadRow('Berat kemasan',`${fN(opt.wKemasan*1000,0)} g`);
+    h+=loadRow('Total/box',`${fN(opt.wTotal,2)} kg`);
+    h+=loadRow('Beban statis',`${fN(opt.appForceStatic,1)} N`);
+    h+=loadRow('Faktor dinamis',`×${opt.dynamicF} (${transport.label})`);
+    h+=loadRow('<b>F total</b>',`<b style="color:var(--danger)">${fN(opt.appForce,1)} N</b>`);
+    h+=loadRow('BCT efektif',`<span style="color:var(--accent)">${fN(opt.bctEff,1)} N</span>`);
+    h+=`<div class="sf-bar-wrap"><div class="sf-bar" style="width:${pct}%;background:${barColor}"></div><div class="sf-bar-marker" style="left:${SF_MIN/3*100}%"></div></div>`;
+    h+=`<div style="display:flex;justify-content:space-between;font-size:10px;margin-top:4px"><span style="color:var(--t3)">SF = <span class="mono" style="color:${barColor};font-weight:700">${fN(sfVal,2)}</span></span><span style="color:var(--t3)">Maks tumpuk aman: <b class="mono" style="color:var(--accent)">${opt.maxStack}</b> lapis</span></div>`;
+    h+=`</div>`;
+  }
+  // MAX DIAMETER
+  h+=`<div class="sec-hdr">Batasan Diameter Lubang</div>`;
+  h+=`<div class="inp-grp"><label>Maks ⌀ Lubang</label><div class="inp-row"><input class="inp" type="number" value="${S.maxDia}" min=".5" max="50" step=".5" onchange="upd('maxDia',+this.value)"><span class="inp-unit">mm</span></div></div>`;
+  h+=`<div class="quick-sel">`;
+  for(const v of[3,5,10,15,20,30,40,50]) h+=`<button class="quick-btn" onclick="upd('maxDia',${v})">${v}</button>`;
+  h+=`</div>`;
+  // MATERIAL
+  h+=`<div class="sec-hdr" style="margin-top:14px">Material</div>`;
+  h+=`<div class="wall-tabs">`;
+  for(const w of WALL_TYPES) h+=`<div class="wall-tab${S.wallFilter===w.id?' active':''}" style="${S.wallFilter===w.id?`color:${w.color};border-color:${w.color};background:${w.color}15`:''}" onclick="S.wallFilter='${w.id}';render()">${w.icon} ${w.label.split(' ')[0]}</div>`;
+  h+=`</div><div class="mat-list">`;
+  for(const m of MATERIALS.filter(m=>m.wall===S.wallFilter)){
+    const a=m.id===S.matId;
+    const wt2=WALL_TYPES.find(w=>w.id===m.wall);
+    h+=`<button class="mat-btn${a?' active':''}" onclick="upd('matId','${m.id}')"><div><div style="font-size:11px;font-weight:600;color:${a?wt2.color:'var(--t1)'}">${m.flute}</div><div style="font-size:9px;color:var(--t3)">${m.desc}</div></div><div style="text-align:right" class="mono"><div style="font-size:11px;font-weight:600;color:${a?wt2.color:'var(--t2)'}">${m.caliper} mm</div><div style="font-size:9px;color:var(--t3)">ECT ${m.ECT}</div></div></button>`;
+  }
+  h+=`</div>`;
+  // Cross-section
+  h+=renderCrossSection(mat);
+  // Mat props
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px;font-size:9px">`;
+  const props=[['Caliper',`${mat.caliper} mm`,wt.color],['ECT',`${mat.ECT} kN/m`,'var(--accent)'],['Grammage',`${mat.grammage} g/m²`,'var(--t1)'],['BST',`${mat.bst} N`,'var(--blue)'],['Harga',`Rp ${fN(mat.costM2)}/m²`,'var(--orange)'],['Tipe',mat.wall==='single'?'1 Fluting':mat.wall==='double'?'2 Fluting':'3 Fluting','var(--purple)']];
+  for(const[l,v,c] of props) h+=`<div style="padding:5px 8px;border-radius:5px;background:var(--input);border:1px solid var(--border)"><div style="color:var(--t3);font-size:8px;text-transform:uppercase">${l}</div><div style="color:${c};font-weight:600;font-family:'JetBrains Mono',monospace;margin-top:1px">${v}</div></div>`;
+  h+=`</div>`;
+  // BOX SIZE removed from sidebar — now in main area next to isometric
+  document.getElementById('sidebar').innerHTML=h;
+}
+
+function inputGrp(label,val,key,unit,type,attrs={},inline=false){
+  const a=Object.entries(attrs).map(([k,v])=>`${k}="${v}"`).join(' ');
+  return`<div class="inp-grp"${inline?' style="margin-bottom:4px"':''}><label>${label}</label><div class="inp-row"><input class="inp" type="${type}" value="${val}" ${a} onchange="upd('${key}',+this.value)"><span class="inp-unit">${unit}</span></div></div>`;
+}
+function loadRow(l,v){return`<div class="load-row"><span class="lbl">${l}</span><span class="val">${v}</span></div>`}
+
+function renderCrossSection(mat){
+  const w=280,h2=50;
+  const nFlute=mat.wall==='single'?1:mat.wall==='double'?2:3;
+  const nLiner=nFlute+1;
+  let svg=`<div style="margin-top:8px;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--card2)"><div style="font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;padding:5px 10px;border-bottom:1px solid var(--border)">Cross-Section — ${mat.flute}</div><svg width="${w}" height="${h2}" viewBox="0 0 ${w} ${h2}">`;
+  const gap=h2/(nLiner+nFlute);
+  const wt=WALL_TYPES.find(ww=>ww.id===mat.wall);
+  const accent=wt.id==='single'?'#00E09E':wt.id==='double'?'#FFB800':'#FF7A3D';
+  for(let i=0;i<nLiner;i++){
+    const y=gap*(1+i*2);
+    svg+=`<line x1="10" y1="${y}" x2="${w-10}" y2="${y}" stroke="${accent}" stroke-width="2"/>`;
+  }
+  for(let i=0;i<nFlute;i++){
+    const y1=gap*(1+i*2),y2=gap*(3+i*2);
+    const mid=(y1+y2)/2;const amp=(y2-y1)/2*.7;
+    let d=`M10,${mid}`;
+    for(let x=10;x<=w-10;x+=1){const f=Math.sin((x-10)/12*Math.PI);d+=` L${x},${mid-f*amp}`}
+    svg+=`<path d="${d}" fill="none" stroke="${accent}55" stroke-width="1.5"/>`;
+  }
+  svg+=`</svg></div>`;return svg;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN AREA RENDER
+// ═══════════════════════════════════════════════════════════════
+function renderMain(){
+  const mat=getMat(),box=getBox();
+  const wt=WALL_TYPES.find(w=>w.id===mat.wall);
+  const cfg={transport:S.transport,storageDays:S.storageDays,stackPattern:S.stackPattern,palletOverhang:S.palletOverhang,humidity:S.humidity,tempDeltaT:S.tempDeltaT};
+  const transport=TRANSPORT_MODES.find(t=>t.id===S.transport);
+  const stackPat=STACK_PATTERNS.find(p=>p.id===S.stackPattern);
+  const{sweep,opt}=optimize(box,mat,S.wt,S.stack,S.maxDia,S.resp,cfg);
+  if(!opt)return;
+  let h='';
+  // METRIC CARDS (8)
+  h+=`<div class="metrics">`;
+  h+=metricCard('📦','Diameter Optimal',`⌀ ${fN(opt.d,1)}`,`mm`,`${fN(opt.actual)} lubang`,sfColor(opt.sf));
+  h+=metricCard('🏗','Beban Terbawah',fN(opt.appForce,0),'N',`${S.stack}× ${transport.label} ×${opt.dynamicF}`,'var(--danger)');
+  h+=metricCard('💪','BCT Efektif',fN(opt.bctEff,0),'N',`Base: ${fN(opt.bctBase,0)} N`,'var(--blue)');
+  h+=metricCard('🛡','Safety Factor',fN(opt.sf,2),sfText(opt.sf),`target ≥ ${SF_MIN}`,sfColor(opt.sf));
+  h+=metricCard('💰','Total Cost Index',fRp(opt.tci),'',`Pkg: ${fRp(opt.totalCost)}`,`var(--orange)`);
+  h+=metricCard('🌬','Ventilasi',`${(opt.ventRatio*100).toFixed(1)}%`,opt.ventRatio>=opt.ventTarget*0.95?'Tercapai ✓':'Di bawah target',`target: ${(opt.ventTarget*100).toFixed(1)}%`,opt.ventRatio>=opt.ventTarget*0.95?'var(--accent)':'var(--warn)');
+  h+=metricCard('🔥','Burst SF',fN(opt.burstSF,1),'',`BST: ${mat.bst} N`,opt.burstSF>=3?'var(--accent)':opt.burstSF>=1.5?'var(--warn)':'var(--danger)');
+  h+=metricCard('📐','Creep Factor',`${opt.cF.toFixed(3)}`,`${S.storageDays} hari`,`BCT: −${((1-opt.cF)*100).toFixed(0)}%`,'var(--cyan)');
+  h+=`</div>`;
+  // MID ROW
+  h+=`<div class="mid-row">`;
+  h+=`<div class="box-viz">`;
+  h+=`<div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">📦 Pilih Ukuran Box</div>`;
+  const autoBox=selectBox(S.pL,S.pW,S.pH);
+  h+=`<div class="box-grid" style="margin-bottom:0">`;
+  for(const b of BOX_SIZES){const sel=box.id===b.id;const isAuto=S.boxOverride<0&&b.id===autoBox.id;h+=`<button class="box-btn${sel?' active':''}" onclick="upd('boxOverride',${b.id})"><div style="font-size:12px;font-weight:${sel?700:400}">${b.tag} — ${b.name}</div><div class="mono" style="font-size:10px;color:var(--t3)">${b.L}×${b.W}×${b.H} mm</div>${isAuto?'<span class="auto-badge">AUTO</span>':''}</button>`}
+  h+=`</div>`;
+  h+=`<div style="border-top:1px solid var(--border);margin:6px -12px 6px"></div>`;
+  h+=`<div style="font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">ISOMETRIK — ${box.name} (${box.tag}) · ${box.L}×${box.W}×${box.H} mm</div>`;
+  h+=renderBoxSVG(box,opt);
+  h+=`<div style="display:flex;gap:6px;margin-top:6px;justify-content:center;align-items:center">`;
+  h+=`<span style="font-size:9px;color:var(--t3)">Manual:</span>`;
+  h+=`<input class="inp" type="number" value="${box.L}" min="100" max="800" step="10" style="width:60px;font-size:10px;padding:4px 6px;text-align:center" onchange="BOX_SIZES[${box.id}]={...BOX_SIZES[${box.id}],L:+this.value};render()">`;
+  h+=`<span style="font-size:9px;color:var(--t3)">×</span>`;
+  h+=`<input class="inp" type="number" value="${box.W}" min="100" max="800" step="10" style="width:60px;font-size:10px;padding:4px 6px;text-align:center" onchange="BOX_SIZES[${box.id}]={...BOX_SIZES[${box.id}],W:+this.value};render()">`;
+  h+=`<span style="font-size:9px;color:var(--t3)">×</span>`;
+  h+=`<input class="inp" type="number" value="${box.H}" min="50" max="600" step="10" style="width:60px;font-size:10px;padding:4px 6px;text-align:center" onchange="BOX_SIZES[${box.id}]={...BOX_SIZES[${box.id}],H:+this.value};render()">`;
+  h+=`<span style="font-size:9px;color:var(--t3)">mm</span></div></div>`;
+  // SPEC TABLE
+  h+=`<div class="spec-table"><div style="font-size:13px;font-weight:700;margin-bottom:8px">Spesifikasi Desain Optimal</div>`;
+  h+=specRow('Ukuran Box',`${box.L}×${box.W}×${box.H} mm (${box.tag})`);
+  h+=specRow('Tipe Dinding',`${wt.label} — ${mat.flute}`,wt.color);
+  h+=specRow('Tebal / ECT / Grammage',`${mat.caliper} mm / ${mat.ECT} kN/m / ${mat.grammage} g/m²`);
+  // Ventilation
+  h+=`<div class="spec-section" style="color:var(--cyan)">Parameter Ventilasi (Respiration-Driven)</div>`;
+  h+=specRow('Laju Respirasi',`${S.resp} mL CO₂/kg·jam`,S.resp>=30?'var(--orange)':'var(--accent)');
+  h+=specRow('Target Respirasi',`${(opt.respVentRatio*100).toFixed(2)}%`,'var(--cyan)');
+  h+=specRow('Target Final',`${(opt.ventTarget*100).toFixed(1)}% (maks geo 5% / resp)`,opt.ventRatio>=opt.ventTarget*0.95?'var(--accent)':'var(--warn)');
+  h+=specRow('Rasio Aktual',`${(opt.ventRatio*100).toFixed(1)}%`,opt.ventRatio>=opt.ventTarget*0.95?'var(--accent)':'var(--warn)');
+  h+=specRow('⌀ Lubang / Pitch',`⌀ ${fN(opt.d,1)} mm / ${fN(opt.pitch,1)} mm`,'var(--accent)');
+  h+=specRow('Jumlah Lubang',`${fN(opt.actual)} (${opt.longP.cols}×${opt.longP.rows}×2 + ${opt.shortP.cols}×${opt.shortP.rows}×2)`,'var(--accent)');
+  h+=specRow('Berat Kemasan',`${fN(opt.wKemasan*1000,0)} g`);
+  // Load
+  h+=`<div class="spec-section" style="color:var(--danger)">Analisis Beban Tumpukan</div>`;
+  h+=`<div style="background:var(--dangerD);border-radius:6px;padding:8px;margin:4px 0">`;
+  h+=specRow('Tumpukan / Pola',`${S.stack} lapis · ${stackPat.label}`);
+  h+=specRow('Transportasi',`${transport.label} (×${opt.dynamicF})`,'var(--cyan)');
+  h+=specRow('Berat per box',`${fN(opt.wTotal,2)} kg (produk ${fN(S.wt,1)} + kemasan ${fN(opt.wKemasan*1000,0)}g)`);
+  h+=specRow('<b>F total</b>',`<b>${fN(opt.appForce,1)} N</b> (statis ${fN(opt.appForceStatic,1)} × ${opt.dynamicF})`,'var(--danger)');
+  h+=`</div>`;
+  // BCT Chain
+  h+=`<div class="spec-section" style="color:var(--accent)">Rantai Koreksi BCT (5 Tahap)</div>`;
+  h+=specRow('① BCT Base (McKee)',`${fN(opt.bctBase,1)} N`);
+  h+=specRow('② Ventilasi',`×${opt.ventCorr.toFixed(3)} → ${fN(opt.bctVent,1)} N`,'var(--cyan)');
+  h+=specRow('③ Humidity ('+((S.humidity*100).toFixed(0))+'%)',`×${opt.humidCorr.toFixed(2)} → ${fN(opt.bctHumid,1)} N`,'var(--blue)');
+  h+=specRow('④ Creep ('+S.storageDays+'d)',`×${opt.cF.toFixed(3)} → ${fN(opt.bctCreep,1)} N`,'var(--purple)');
+  h+=specRow('⑤ Tumpukan ('+stackPat.label+')',`×${opt.stackCorr.toFixed(2)} → ${fN(opt.bctStack,1)} N`,'var(--warn)');
+  if(S.palletOverhang>0) h+=specRow('⑥ Overhang ('+S.palletOverhang+'%)',`×${opt.overhangCorr.toFixed(2)} → ${fN(opt.bctEff,1)} N`,'var(--orange)');
+  h+=specRow('<b>BCT Efektif Final</b>',`<b>${fN(opt.bctEff,1)} N</b>`,'var(--accent)');
+  h+=specRow('Safety Factor / Maks Tumpuk',`${fN(opt.sf,2)} (${sfText(opt.sf)}) / ${opt.maxStack} lapis`,sfColor(opt.sf));
+  // Burst
+  h+=`<div class="spec-section" style="color:var(--purple)">Burst Strength</div>`;
+  h+=specRow('BST / P Internal',`${fN(mat.bst)} N / ${fN(opt.pInternal,1)} Pa`,'var(--purple)');
+  h+=specRow('Burst SF',`${fN(opt.burstSF,1)}`,opt.burstSF>=3?'var(--accent)':opt.burstSF>=1.5?'var(--warn)':'var(--danger)');
+  // Cost + TCI
+  h+=`<div class="spec-section" style="color:var(--orange)">Total Cost Index (TCI)</div>`;
+  h+=specRow('Biaya Material + Cutting',`${fRp(opt.matCost)} + ${fRp(opt.holeCost)} = ${fRp(opt.totalCost)}`);
+  h+=specRow('Prob. Kegagalan',`${(opt.failProb*100).toFixed(1)}%`,opt.failProb>0.1?'var(--danger)':'var(--accent)');
+  h+=specRow('Biaya Kerugian',fRp(opt.lossCost),opt.lossCost>5000?'var(--danger)':'var(--t2)');
+  h+=specRow('<b>TCI</b>',`<b>${fRp(opt.tci)}</b>`,'var(--orange)');
+  h+=`</div></div>`;
+  // CHART
+  h+=`<div class="chart-wrap"><div class="chart-title">📊 Optimasi: TCI vs Safety Factor vs Diameter</div><div class="chart-canvas"><canvas id="optChart"></canvas></div><div class="chart-legend">`;
+  h+=legendItem('var(--orange)','Total Cost Index');h+=legendItem('var(--accent)','Safety Factor');h+=legendItem('var(--blue)','Ventilasi (%)');h+=legendItem('var(--danger)','SF Min = 1.5');
+  if(S.maxDia<50)h+=legendItem('rgba(255,59,92,.2)','Zona Terlarang');
+  h+=`</div></div>`;
+  // WARNINGS
+  h+=`<div class="warnings">`;
+  if(opt.sf<1.5)h+=`<div class="warn-box red"><strong>⚠ SF < 1.5</strong>BCT eff ${fN(opt.bctEff,0)} N < F total ${fN(opt.appForce,0)} N. Chain: Vent(×${opt.ventCorr.toFixed(2)})×Humid(×${opt.humidCorr})×Creep(×${opt.cF.toFixed(3)})×Stack(×${opt.stackCorr}). Maks aman: ${opt.maxStack}.</div>`;
+  if(opt.ventRatio<opt.ventTarget*0.95)h+=`<div class="warn-box orange"><strong>⚠ Ventilasi: ${(opt.ventRatio*100).toFixed(1)}% < target ${(opt.ventTarget*100).toFixed(1)}%</strong>Respirasi ${S.resp} mL membutuhkan ventilasi lebih.${S.maxDia<=10?' Batasan produk kecil.':' Perbesar diameter.'}</div>`;
+  if(opt.burstSF<1.5)h+=`<div class="warn-box red"><strong>⚠ Burst Strength Rendah (SF=${fN(opt.burstSF,1)})</strong>BST ${fN(mat.bst)} N tidak memadai. Gunakan material dengan BST lebih tinggi.</div>`;
+  if(S.storageDays>30)h+=`<div class="warn-box yellow"><strong>ℹ Creep: −${((1-opt.cF)*100).toFixed(0)}% (${S.storageDays} hari)</strong>Penyimpanan lama menurunkan BCT signifikan.</div>`;
+  if(opt.lossCost>opt.totalCost*0.5)h+=`<div class="warn-box orange"><strong>⚠ TCI: Kerugian ${(opt.failProb*100).toFixed(0)}% prob. > 50% biaya kemasan</strong>Pertimbangkan material lebih kuat untuk menurunkan TCI.</div>`;
+  h+=`</div>`;
+  // SENSITIVITY
+  h+=`<div class="compare-section"><button class="compare-toggle" onclick="S.showSensitivity=!S.showSensitivity;render()"><span style="font-weight:600">📈 Analisis Sensitivitas</span><span>${S.showSensitivity?'Sembunyikan ▴':'Tampilkan ▾'}</span></button>`;
+  if(S.showSensitivity){
+    const sa=sensitivityAnalysis(box,mat,S.wt,S.stack,S.maxDia,S.resp,cfg);
+    if(sa){
+      h+=`<div class="compare-body"><table class="cmp-table"><thead><tr><th>Parameter</th><th>Low</th><th style="background:var(--accentD)">Baseline</th><th>High</th><th>SF Low</th><th style="background:var(--accentD)">SF Base</th><th>SF High</th><th>ΔSF</th></tr></thead><tbody>`;
+      for(const t of sa.tests){
+        const dL=((t.sfLow-t.sfBase)/t.sfBase*100),dH=((t.sfHigh-t.sfBase)/t.sfBase*100);
+        const worst=Math.min(dL,dH);const dc=worst<-15?'var(--danger)':worst<-5?'var(--warn)':'var(--accent)';
+        h+=`<tr><td class="row-hdr">${t.param}</td><td>${fN(t.low,2)} ${t.unit}</td><td style="background:var(--accentD)">${fN(t.base,2)} ${t.unit}</td><td>${fN(t.high,2)} ${t.unit}</td><td><span class="${sfClass(t.sfLow)}">${fN(t.sfLow,2)}</span></td><td style="background:var(--accentD)"><span class="${sfClass(t.sfBase)}">${fN(t.sfBase,2)}</span></td><td><span class="${sfClass(t.sfHigh)}">${fN(t.sfHigh,2)}</span></td><td style="color:${dc};font-weight:700">${dL>0?'+':''}${fN(dL,1)}%/${dH>0?'+':''}${fN(dH,1)}%</td></tr>`;
+      }
+      h+=`</tbody></table></div>`;
+    }
+  }
+  h+=`</div>`;
+  // COMPARE
+  h+=`<div class="compare-section"><button class="compare-toggle" onclick="S.showCompare=!S.showCompare;render()"><span style="font-weight:600">📊 Perbandingan 11 Material</span><span>${S.showCompare?'Sembunyikan ▴':'Tampilkan ▾'}</span></button>`;
+  if(S.showCompare){
+    const cmp=compareMaterials(box,S.wt,S.stack,S.maxDia,S.resp,cfg);const costs=cmp.map(c=>c.opt?c.opt.tci:Infinity);const minCost=Math.min(...costs);
+    h+=`<div class="compare-body"><table class="cmp-table"><thead><tr><th>Parameter</th>`;
+    for(const c of cmp)h+=`<th style="color:${WALL_TYPES.find(w=>w.id===c.mat.wall).color}">${c.mat.flute}</th>`;
+    h+=`</tr></thead><tbody>`;
+    h+=cmpSection('PROPERTI');h+=cmpRow('Caliper (mm)',cmp.map(c=>fN(c.mat.caliper,2)));h+=cmpRow('ECT (kN/m)',cmp.map(c=>fN(c.mat.ECT,1)));h+=cmpRow('BST (N)',cmp.map(c=>fN(c.mat.bst)));
+    h+=cmpSection('KINERJA');h+=cmpRow('BCT Eff (N)',cmp.map(c=>c.opt?fN(c.opt.bctEff,0):'-'));h+=cmpRow('SF',cmp.map(c=>c.opt?`<span class="${sfClass(c.opt.sf)}">${fN(c.opt.sf,2)}</span>`:'-'));h+=cmpRow('Burst SF',cmp.map(c=>c.opt?fN(c.opt.burstSF,1):'-'));h+=cmpRow('Maks Tumpuk',cmp.map(c=>c.opt?c.opt.maxStack:'-'));
+    h+=cmpSection('BIAYA');h+=cmpRow('Kemasan',cmp.map(c=>c.opt?fN(c.opt.totalCost):'-'));h+=cmpRow('Kerugian',cmp.map(c=>c.opt?fN(c.opt.lossCost):'-'));
+    h+=cmpRow('<b>TCI (Rp)</b>',cmp.map((c,i)=>{if(!c.opt)return'-';const v=fN(c.opt.tci);return costs[i]===minCost?`<span class="cost-best">${v} ✓</span>`:`<b>${v}</b>`}));
+    h+=`</tbody></table></div>`;
+  }
+  h+=`</div>`;
+  // FOOTER
+  h+=`<div class="footer">`;
+  h+=footerCol('📦 Material',[['Tipe',wt.label],['Flute',mat.flute],['Caliper',`${mat.caliper} mm`],['ECT/BST',`${mat.ECT}/${mat.bst}`]]);
+  h+=footerCol('🌬 Ventilasi',[['⌀',`${fN(opt.d,1)} mm`],['Jumlah',`${fN(opt.actual)}`],['Target',`${(opt.ventTarget*100).toFixed(1)}%`],['Aktual',`${(opt.ventRatio*100).toFixed(1)}%`]]);
+  h+=footerCol('🛡 Struktural',[['BCT Eff',`${fN(opt.bctEff,0)} N`],['F Total',`${fN(opt.appForce,0)} N`],['SF',`${fN(opt.sf,2)}`],['Creep',`${opt.cF.toFixed(3)}`]]);
+  h+=footerCol('💰 Biaya',[['Kemasan',fRp(opt.totalCost)],['Kerugian',fRp(opt.lossCost)],['<b>TCI</b>',`<b style="color:var(--orange)">${fRp(opt.tci)}</b>`]]);
+  h+=`</div>`;
+  h+=`<div style="text-align:center;padding:12px;font-size:10px;color:var(--t3)">HORTI-PACK OPTIMIZER v3.0 OFFLINE © 2026 · IPB University · Disertasi Doktoral Iip</div>`;
+  document.getElementById('mainArea').innerHTML=h;
+  setTimeout(()=>drawChart(sweep,opt),50);
+}
+
+function metricCard(icon,label,val,unit,sub,color){
+  return`<div class="metric"><div class="top"><span class="label">${label}</span><span class="icon">${icon}</span></div><div class="val mono" style="color:${color}">${val}</div><div class="unit">${unit}</div><div class="sub">${sub}</div></div>`;
+}
+function specRow(l,v,c){return`<div class="spec-row"><span class="lbl">${l}</span><span class="val" style="color:${c||'var(--t1)'}">${v}</span></div>`}
+function legendItem(c,t){return`<div class="legend-item"><div class="legend-dot" style="background:${c}"></div>${t}</div>`}
+function cmpSection(t){return`<tr class="section-row"><td colspan="12">${t}</td></tr>`}
+function cmpRow(l,vals){let r=`<tr><td class="row-hdr">${l}</td>`;for(const v of vals)r+=`<td>${v}</td>`;return r+'</tr>'}
+function footerCol(title,items){let h=`<div class="footer-col"><h4>${title}</h4>`;for(const[l,v] of items)h+=`<div class="footer-item"><span class="lbl">${l}</span><span class="val">${v}</span></div>`;return h+'</div>'}
+
+// ═══════════════════════════════════════════════════════════════
+// BOX SVG
+// ═══════════════════════════════════════════════════════════════
+function renderBoxSVG(box,design){
+  const{L,W,H}=box;
+  const sc=Math.min(220/L,170/H,100/W)*.88;
+  const sL=L*sc,sW=W*sc,sH=H*sc;
+  const ix=sW*.6,iy=sW*.35;
+  // Dynamic origin: tight margins around actual drawing
+  const ml=40,mt=28,mr=20,mb=32; // margins: left(labels), top(badge), right, bottom(label)
+  const ox=ml,oy=mt+sH+iy; // origin = bottom-left of front face
+  const totalW=ox+sL+ix+mr;
+  const totalH=oy+mb;
+  const fp=`${ox},${oy} ${ox},${oy-sH} ${ox+sL},${oy-sH} ${ox+sL},${oy}`;
+  const rp=`${ox+sL},${oy} ${ox+sL},${oy-sH} ${ox+sL+ix},${oy-sH-iy} ${ox+sL+ix},${oy-iy}`;
+  const tp=`${ox},${oy-sH} ${ox+ix},${oy-sH-iy} ${ox+sL+ix},${oy-sH-iy} ${ox+sL},${oy-sH}`;
+  let svg=`<svg width="${totalW}" height="${totalH}" viewBox="0 0 ${totalW} ${totalH}" style="max-width:100%;display:block;margin:0 auto">`;
+  // Defs: glow filter for holes, gradient for faces
+  svg+=`<defs>`;
+  svg+=`<filter id="holeGlow"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
+  svg+=`<linearGradient id="frontG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0e2440"/><stop offset="100%" stop-color="#081828"/></linearGradient>`;
+  svg+=`<linearGradient id="sideG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0a1c35"/><stop offset="100%" stop-color="#06111e"/></linearGradient>`;
+  svg+=`<linearGradient id="topG" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#122e50"/><stop offset="100%" stop-color="#0d2240"/></linearGradient>`;
+  svg+=`<radialGradient id="holeG"><stop offset="0%" stop-color="#020810"/><stop offset="70%" stop-color="#040e1a"/><stop offset="100%" stop-color="#0a1a30"/></radialGradient>`;
+  svg+=`</defs>`;
+  // Shadow
+  svg+=`<polygon points="${ox+4},${oy+4} ${ox+4},${oy-sH+4} ${ox+sL+4},${oy-sH+4} ${ox+sL+4},${oy+4}" fill="rgba(0,0,0,.2)"/>`;
+  // Faces
+  svg+=`<polygon points="${fp}" fill="url(#frontG)" stroke="#00E09E" stroke-width="2"/>`;
+  svg+=`<polygon points="${rp}" fill="url(#sideG)" stroke="#00E09E" stroke-width="1.5" stroke-opacity=".7"/>`;
+  svg+=`<polygon points="${tp}" fill="url(#topG)" stroke="#00E09E" stroke-width="1.5" stroke-opacity=".7"/>`;
+  // Edge highlights
+  svg+=`<line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy-sH}" stroke="#00E09E" stroke-width="2.5" stroke-opacity=".9"/>`;
+  svg+=`<line x1="${ox}" y1="${oy-sH}" x2="${ox+sL}" y2="${oy-sH}" stroke="#00E09E" stroke-width="2" stroke-opacity=".6"/>`;
+  svg+=`<line x1="${ox+sL}" y1="${oy}" x2="${ox+sL}" y2="${oy-sH}" stroke="#00E09E" stroke-width="2" stroke-opacity=".5"/>`;
+  // --- FRONT PANEL HOLES (large, clear) ---
+  if(design&&design.actual>0&&design.longP.cols>0){
+    const dr=design.d*sc;
+    const r=Math.max(dr/2,2.5); // minimum 2.5px radius for visibility
+    const pch=design.pitch*sc;
+    const cols=Math.min(design.longP.cols,16),rows=Math.min(design.longP.rows,10);
+    const gW=(cols-1)*pch,gH=(rows-1)*pch;
+    const sx=ox+(sL-gW)/2,sy=oy-sH+(sH-gH)/2;
+    for(let c=0;c<cols;c++)for(let rr=0;rr<rows;rr++){
+      const cx=sx+c*pch,cy=sy+rr*pch;
+      const pad2=r+1;
+      if(cx-pad2>=ox&&cx+pad2<=ox+sL&&cy-pad2>=oy-sH&&cy+pad2<=oy){
+        // Hole body
+        svg+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#holeG)" stroke="#00E09E" stroke-width="${r>4?1.2:.8}" stroke-opacity=".7" filter="url(#holeGlow)"/>`;
+        // Inner ring for depth effect on larger holes
+        if(r>5) svg+=`<circle cx="${cx}" cy="${cy}" r="${r*.6}" fill="none" stroke="#00E09E" stroke-width=".4" stroke-opacity=".25"/>`;
+      }
+    }
+  }
+  // --- SIDE PANEL HOLES (perspective-corrected ellipses) ---
+  if(design&&design.actual>0&&design.shortP.cols>0){
+    const dr=design.d*sc;
+    const r=Math.max(dr/2,2);
+    const pch=design.pitch*sc;
+    const cols=Math.min(design.shortP.cols,8),rows=Math.min(design.shortP.rows,8);
+    const gH=(rows-1)*pch;
+    const marginX=ix*.12; // margin from edges
+    const availW=ix-2*marginX;
+    for(let c=0;c<cols;c++)for(let rr=0;rr<rows;rr++){
+      const frac=cols>1?(c/(cols-1)):0.5;
+      const cx2=ox+sL+marginX+frac*availW;
+      const yOff=frac*iy; // perspective vertical offset
+      const topEdge=oy-sH-yOff;
+      const botEdge=oy-yOff;
+      const panelH=botEdge-topEdge;
+      const cy2=topEdge+(panelH-gH)/2+rr*pch;
+      if(cy2-r>topEdge+2&&cy2+r<botEdge-2){
+        svg+=`<ellipse cx="${cx2}" cy="${cy2}" rx="${r*.55}" ry="${r*.85}" fill="url(#holeG)" stroke="#00E09E" stroke-width=".7" stroke-opacity=".5" filter="url(#holeGlow)"/>`;
+      }
+    }
+  }
+  // --- DIMENSION LABELS with arrows ---
+  const arrC='#8DA0BE',arrO='.5';
+  // Bottom: L dimension
+  const ly=oy+22;
+  svg+=`<line x1="${ox}" y1="${ly}" x2="${ox+sL}" y2="${ly}" stroke="${arrC}" stroke-width="1" stroke-opacity="${arrO}" marker-start="url(#arrS)" marker-end="url(#arrE)"/>`;
+  svg+=`<line x1="${ox}" y1="${oy+2}" x2="${ox}" y2="${ly+4}" stroke="${arrC}" stroke-width=".5" stroke-opacity=".3" stroke-dasharray="2,2"/>`;
+  svg+=`<line x1="${ox+sL}" y1="${oy+2}" x2="${ox+sL}" y2="${ly+4}" stroke="${arrC}" stroke-width=".5" stroke-opacity=".3" stroke-dasharray="2,2"/>`;
+  svg+=`<rect x="${ox+sL/2-28}" y="${ly-8}" width="56" height="15" rx="3" fill="#0C1A2E" stroke="${arrC}" stroke-width=".5" stroke-opacity=".3"/>`;
+  svg+=`<text x="${ox+sL/2}" y="${ly+4}" text-anchor="middle" fill="#00E09E" font-size="11" font-weight="600" font-family="JetBrains Mono">${L}</text>`;
+  // Left: H dimension
+  const lx=ox-22;
+  svg+=`<line x1="${lx}" y1="${oy}" x2="${lx}" y2="${oy-sH}" stroke="${arrC}" stroke-width="1" stroke-opacity="${arrO}"/>`;
+  svg+=`<line x1="${ox-2}" y1="${oy}" x2="${lx-4}" y2="${oy}" stroke="${arrC}" stroke-width=".5" stroke-opacity=".3" stroke-dasharray="2,2"/>`;
+  svg+=`<line x1="${ox-2}" y1="${oy-sH}" x2="${lx-4}" y2="${oy-sH}" stroke="${arrC}" stroke-width=".5" stroke-opacity=".3" stroke-dasharray="2,2"/>`;
+  svg+=`<rect x="${lx-20}" y="${oy-sH/2-8}" width="40" height="15" rx="3" fill="#0C1A2E" stroke="${arrC}" stroke-width=".5" stroke-opacity=".3"/>`;
+  svg+=`<text x="${lx}" y="${oy-sH/2+4}" text-anchor="middle" fill="#00E09E" font-size="11" font-weight="600" font-family="JetBrains Mono">${H}</text>`;
+  // Right-top: W dimension
+  const wx1=ox+sL+ix/2-10,wy1=oy-sH-iy/2+5;
+  svg+=`<rect x="${wx1-14}" y="${wy1-8}" width="44" height="15" rx="3" fill="#0C1A2E" stroke="${arrC}" stroke-width=".5" stroke-opacity=".3"/>`;
+  svg+=`<text x="${wx1+8}" y="${wy1+4}" text-anchor="middle" fill="#FFB800" font-size="11" font-weight="600" font-family="JetBrains Mono">${W}</text>`;
+  // Hole info badge
+  if(design&&design.actual>0){
+    const bx=ox+sL/2,by=oy-sH-12;
+    svg+=`<rect x="${bx-50}" y="${by-10}" width="100" height="18" rx="9" fill="#00E09E18" stroke="#00E09E" stroke-width=".8"/>`;
+    svg+=`<text x="${bx}" y="${by+3}" text-anchor="middle" fill="#00E09E" font-size="9" font-weight="600" font-family="JetBrains Mono">⌀${design.d.toFixed(1)}mm · ${design.actual} holes</text>`;
+  }
+  svg+=`</svg>`;return svg;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CHART (Canvas)
+// ═══════════════════════════════════════════════════════════════
+function drawChart(sweep,opt){
+  const canvas=document.getElementById('optChart');
+  if(!canvas)return;
+  const rect=canvas.parentElement.getBoundingClientRect();
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=rect.width*dpr;
+  canvas.height=rect.height*dpr;
+  canvas.style.width=rect.width+'px';
+  canvas.style.height=rect.height+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const W=rect.width,H=rect.height;
+  const pad={t:20,r:60,b:40,l:70};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  // Data every 1mm for chart
+  const data=sweep.filter((_,i)=>i%2===0);
+  const costs=data.map(s=>s.tci);
+  const sfs=data.map(s=>s.sf);
+  const vents=data.map(s=>s.ventRatio*100);
+  const maxCost=Math.max(...costs)*1.1;
+  const maxSF=Math.max(...sfs,3)*1.1;
+  const x=d=>pad.l+(d-data[0].d)/(data[data.length-1].d-data[0].d)*cW;
+  const yC=c=>pad.t+(1-c/maxCost)*cH;
+  const yS=s=>pad.t+(1-s/maxSF)*cH;
+  const yV=v=>pad.t+(1-v/100)*cH;
+  // Background
+  ctx.fillStyle='#0C1A2E';ctx.fillRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle='#1B325533';ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const gy=pad.t+cH*i/5;
+    ctx.beginPath();ctx.moveTo(pad.l,gy);ctx.lineTo(pad.l+cW,gy);ctx.stroke();
+  }
+  // Restricted zone
+  if(S.maxDia<50){
+    const rx=x(S.maxDia);
+    ctx.fillStyle='rgba(255,59,92,0.08)';
+    ctx.fillRect(rx,pad.t,pad.l+cW-rx,cH);
+    ctx.strokeStyle='rgba(255,59,92,0.3)';ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(rx,pad.t);ctx.lineTo(rx,pad.t+cH);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,59,92,0.5)';ctx.font='10px Outfit';ctx.textAlign='center';
+    ctx.fillText(`Maks ⌀ ${S.maxDia}mm`,rx,pad.t-5);
+  }
+  // SF min line
+  const sfMinY=yS(SF_MIN);
+  ctx.strokeStyle='rgba(255,59,92,0.6)';ctx.setLineDash([6,3]);ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,sfMinY);ctx.lineTo(pad.l+cW,sfMinY);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#FF3B5C88';ctx.font='9px JetBrains Mono';ctx.textAlign='left';
+  ctx.fillText('SF Min = 1.5',pad.l+4,sfMinY-4);
+  // Cost area fill
+  ctx.beginPath();ctx.moveTo(x(data[0].d),yC(data[0].totalCost));
+  for(const s of data)ctx.lineTo(x(s.d),yC(s.tci));
+  ctx.lineTo(x(data[data.length-1].d),pad.t+cH);ctx.lineTo(x(data[0].d),pad.t+cH);ctx.closePath();
+  ctx.fillStyle='rgba(255,122,61,0.08)';ctx.fill();
+  // Cost line
+  ctx.beginPath();ctx.moveTo(x(data[0].d),yC(data[0].totalCost));
+  for(const s of data)ctx.lineTo(x(s.d),yC(s.tci));
+  ctx.strokeStyle='#FF7A3D';ctx.lineWidth=2;ctx.stroke();
+  // SF line
+  ctx.beginPath();ctx.moveTo(x(data[0].d),yS(data[0].sf));
+  for(const s of data)ctx.lineTo(x(s.d),yS(s.sf));
+  ctx.strokeStyle='#00E09E';ctx.lineWidth=2;ctx.stroke();
+  // Vent line
+  ctx.beginPath();ctx.moveTo(x(data[0].d),yV(vents[0]));
+  for(let i=0;i<data.length;i++)ctx.lineTo(x(data[i].d),yV(vents[i]));
+  ctx.strokeStyle='#3B82F6';ctx.lineWidth=1.5;ctx.stroke();
+  // Optimal marker
+  if(opt){
+    const ox2=x(opt.d),oy2=yC(opt.tci);
+    ctx.beginPath();ctx.arc(ox2,oy2,5,0,Math.PI*2);ctx.fillStyle='#00E09E';ctx.fill();
+    ctx.strokeStyle='white';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.beginPath();ctx.setLineDash([3,3]);ctx.strokeStyle='#00E09E44';
+    ctx.moveTo(ox2,pad.t);ctx.lineTo(ox2,pad.t+cH);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#00E09E';ctx.font='bold 10px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(`⌀ ${fN(opt.d,1)} mm`,ox2,pad.t+cH+14);
+  }
+  // Axes
+  ctx.fillStyle='#8DA0BE';ctx.font='10px JetBrains Mono';
+  // X axis
+  ctx.textAlign='center';
+  for(let d=0;d<=50;d+=10){
+    const ax=x(d);ctx.fillText(d+'',ax,pad.t+cH+28);
+    ctx.strokeStyle='#1B325555';ctx.beginPath();ctx.moveTo(ax,pad.t+cH);ctx.lineTo(ax,pad.t+cH+4);ctx.stroke();
+  }
+  ctx.fillStyle='#536B8A';ctx.font='10px Outfit';
+  ctx.fillText('Diameter Lubang (mm)',pad.l+cW/2,H-2);
+  // Y left (cost)
+  ctx.textAlign='right';ctx.fillStyle='#FF7A3D';ctx.font='9px JetBrains Mono';
+  for(let i=0;i<=5;i++){
+    const v=maxCost*i/5;
+    ctx.fillText(v>=1000?Math.round(v/1000)+'k':Math.round(v)+'',pad.l-6,pad.t+cH-cH*i/5+4);
+  }
+  ctx.save();ctx.translate(12,pad.t+cH/2);ctx.rotate(-Math.PI/2);ctx.fillStyle='#FF7A3D';ctx.font='10px Outfit';ctx.textAlign='center';ctx.fillText('TCI (Rp)',0,0);ctx.restore();
+  // Y right (SF)
+  ctx.textAlign='left';ctx.fillStyle='#00E09E';ctx.font='9px JetBrains Mono';
+  for(let i=0;i<=5;i++){
+    const v=(maxSF*i/5).toFixed(1);
+    ctx.fillText(v,pad.l+cW+6,pad.t+cH-cH*i/5+4);
+  }
+  ctx.save();ctx.translate(W-6,pad.t+cH/2);ctx.rotate(Math.PI/2);ctx.fillStyle='#00E09E';ctx.font='10px Outfit';ctx.textAlign='center';ctx.fillText('Safety Factor',0,0);ctx.restore();
+  // Tooltip on hover
+  canvas.onmousemove=e=>{
+    const br=canvas.getBoundingClientRect();
+    const mx=e.clientX-br.left,my=e.clientY-br.top;
+    if(mx<pad.l||mx>pad.l+cW||my<pad.t||my>pad.t+cH){hideTooltip();return}
+    const dVal=data[0].d+(mx-pad.l)/cW*(data[data.length-1].d-data[0].d);
+    const nearest=data.reduce((a,b)=>Math.abs(a.d-dVal)<Math.abs(b.d-dVal)?a:b);
+    showTooltip(e.clientX,e.clientY,nearest);
+  };
+  canvas.onmouseleave=()=>hideTooltip();
+}
+
+let tooltipEl=null;
+function showTooltip(cx,cy,s){
+  if(!tooltipEl){tooltipEl=document.createElement('div');tooltipEl.style.cssText='position:fixed;z-index:999;background:#0F2038;border:1px solid #1B3255;border-radius:8px;padding:10px 14px;font-size:12px;color:#EDF2FA;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.5);line-height:1.6';document.body.appendChild(tooltipEl)}
+  tooltipEl.style.display='block';
+  tooltipEl.style.left=(cx+15)+'px';tooltipEl.style.top=(cy-60)+'px';
+  tooltipEl.innerHTML=`<div style="font-weight:700;color:#00E09E;font-family:'JetBrains Mono',monospace">⌀ ${fN(s.d,1)} mm</div><div>Biaya: <span class="mono" style="color:#FF7A3D">${fRp(s.tci)}</span></div><div>SF: <span class="mono" style="color:${sfColor(s.sf)}">${fN(s.sf,2)}</span></div><div>Ventilasi: <span class="mono" style="color:#3B82F6">${(s.ventRatio*100).toFixed(1)}%</span></div>`;
+}
+function hideTooltip(){if(tooltipEl)tooltipEl.style.display='none'}
+
+// ═══════════════════════════════════════════════════════════════
+// STATE MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+function upd(key,val){
+  S[key]=val;
+  if(key==='matId'){const m=MATERIALS.find(m=>m.id===val);if(m)S.wallFilter=m.wall}
+  render();
+}
+function applyPreset(i){
+  const p=ALL_PRESETS[i];
+  S.wt=p.w;S.pL=p.L;S.pW=p.W;S.pH=p.H;S.resp=p.r;
+  S.maxDia=p.maxDia;S.boxOverride=-1;S.activePreset=i;
+  render();
+}
+function render(){renderSidebar();renderMain()}
+
+// Clock
+function updateClock(){
+  const now=new Date();
+  const el=document.getElementById('clockDisplay');
+  if(el)el.textContent=now.toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' '+now.toLocaleTimeString('id-ID');
+}
+setInterval(updateClock,1000);
+
+// INIT
+window.addEventListener('load',()=>{updateClock();applyPreset(0)});
+window.addEventListener('resize',()=>{const mat=getMat(),box=getBox();const cfg={transport:S.transport,storageDays:S.storageDays,stackPattern:S.stackPattern,palletOverhang:S.palletOverhang,humidity:S.humidity,tempDeltaT:S.tempDeltaT};const{sweep,opt}=optimize(box,mat,S.wt,S.stack,S.maxDia,S.resp,cfg);drawChart(sweep,opt)});
+
+// ═══════════════════════════════════════════════════════════════
+// PWA: Service Worker & Install Prompt
+// ═══════════════════════════════════════════════════════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg=>{
+        console.log('[PWA] Service Worker registered, scope:',reg.scope);
+        // Check for updates
+        reg.addEventListener('updatefound',()=>{
+          const newSW=reg.installing;
+          newSW.addEventListener('statechange',()=>{
+            if(newSW.state==='installed'&&navigator.serviceWorker.controller){
+              showUpdateBanner();
+            }
+          });
+        });
+      })
+      .catch(err=>console.log('[PWA] SW registration failed:',err));
+  });
+}
+
+// Install prompt handler
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  showInstallButton();
+});
+
+function showInstallButton(){
+  const btn=document.createElement('button');
+  btn.id='pwa-install-btn';
+  btn.innerHTML='📲 Install App';
+  btn.style.cssText='position:fixed;bottom:20px;right:20px;z-index:9999;padding:12px 20px;background:linear-gradient(135deg,#00E09E,#3B82F6);color:#06101F;border:none;border-radius:12px;font-family:Outfit,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(0,224,158,.3);transition:.2s;animation:pwaSlideUp .4s ease-out';
+  btn.onmouseover=()=>btn.style.transform='scale(1.05)';
+  btn.onmouseout=()=>btn.style.transform='scale(1)';
+  btn.onclick=async()=>{
+    if(!deferredPrompt)return;
+    deferredPrompt.prompt();
+    const result=await deferredPrompt.userChoice;
+    console.log('[PWA] Install result:',result.outcome);
+    deferredPrompt=null;
+    btn.remove();
+  };
+  // Add animation keyframes
+  if(!document.getElementById('pwa-styles')){
+    const style=document.createElement('style');
+    style.id='pwa-styles';
+    style.textContent=`@keyframes pwaSlideUp{from{transform:translateY(100px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes pwaFadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}`;
+    document.head.appendChild(style);
+  }
+  document.body.appendChild(btn);
+}
+
+function showUpdateBanner(){
+  const banner=document.createElement('div');
+  banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;padding:10px 20px;background:#0F2038;border-bottom:2px solid #00E09E;display:flex;justify-content:space-between;align-items:center;font-family:Outfit,sans-serif;font-size:13px;color:#EDF2FA;animation:pwaFadeIn .3s ease-out';
+  banner.innerHTML=`<span>🔄 Versi baru tersedia!</span><button onclick="location.reload()" style="padding:6px 16px;background:#00E09E;color:#06101F;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-family:inherit">Update</button>`;
+  document.body.appendChild(banner);
+}
+
+// Detect if running as installed PWA
+window.addEventListener('appinstalled',()=>{
+  console.log('[PWA] App installed successfully');
+  const btn=document.getElementById('pwa-install-btn');
+  if(btn)btn.remove();
+});
+</script>
+</body>
+</html>
