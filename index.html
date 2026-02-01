@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>HORTI-PACK OPTIMIZER v3.0 — Offline</title>
+<title>HORTI-PACK OPTIMIZER v3.1 — Offline</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 :root {
@@ -163,6 +163,22 @@ input:focus,select:focus{border-color:var(--accent)!important;box-shadow:0 0 0 2
 /* RESP INDICATOR */
 .resp-ind{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;margin-left:4px}
 
+/* AVAIL BADGE */
+.avail-badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:8px;font-weight:700;letter-spacing:.3px}
+.avail-5{background:rgba(0,224,158,.15);color:#00E09E}
+.avail-4{background:rgba(59,130,246,.15);color:#3B82F6}
+.avail-3{background:rgba(255,184,0,.15);color:#FFB800}
+.avail-2{background:rgba(255,122,61,.15);color:#FF7A3D}
+.avail-1{background:rgba(255,59,92,.15);color:#FF3B5C}
+
+/* DURASI SIMPAN TABLE */
+.durasi-table{border-collapse:collapse;font-size:11px;width:100%}
+.durasi-table th,.durasi-table td{padding:6px 10px;text-align:center;border:1px solid var(--border)}
+.durasi-table th{background:var(--card2);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+.durasi-table td{font-family:'JetBrains Mono',monospace}
+.durasi-table .stakeholder{text-align:left;font-family:'Outfit',sans-serif;font-weight:500;color:var(--t2);font-size:10px}
+.durasi-highlight{background:rgba(0,224,158,.08)!important}
+
 /* CHART LEGEND */
 .chart-legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:10px;justify-content:center}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)}
@@ -183,8 +199,8 @@ input:focus,select:focus{border-color:var(--accent)!important;box-shadow:0 0 0 2
 <!-- HEADER -->
 <header class="hdr">
   <div>
-    <h1><span class="brand">HORTI-PACK</span> <span style="font-weight:400;color:var(--t2);font-size:18px">OPTIMIZER</span> <span class="ver">v3.0 OFFLINE</span></h1>
-    <p class="sub">McKee BCT · 5-Stage Correction · Respiration-Driven Ventilation · TCI Optimization · Sensitivity Analysis</p>
+    <h1><span class="brand">HORTI-PACK</span> <span style="font-weight:400;color:var(--t2);font-size:18px">OPTIMIZER</span> <span class="ver">v3.1</span></h1>
+    <p class="sub">McKee BCT · 5-Stage Correction · TCI Optimization · SNI 14-1439 / FEFCO / TAPPI Compliant</p>
   </div>
   <div style="text-align:right">
     <div class="mono" style="font-size:11px;color:var(--t2)" id="clockDisplay"></div>
@@ -209,17 +225,17 @@ const WALL_TYPES=[
   {id:"triple",label:"Triple Wall",icon:"▮▮▮",desc:"3 fluting, 4 liner",color:"var(--orange)"},
 ];
 const MATERIALS=[
-  {id:"E1",wall:"single",flute:"E-Flute",caliper:1.6,ECT:2.8,grammage:380,costM2:16000,bst:1800,desc:"Tipis, display packaging"},
-  {id:"B1",wall:"single",flute:"B-Flute",caliper:2.5,ECT:3.6,grammage:450,costM2:18500,bst:2400,desc:"Serbaguna, die-cutting baik"},
-  {id:"C1",wall:"single",flute:"C-Flute",caliper:3.66,ECT:4.4,grammage:550,costM2:22000,bst:3200,desc:"Standar distribusi"},
-  {id:"A1",wall:"single",flute:"A-Flute",caliper:4.8,ECT:5.2,grammage:630,costM2:25000,bst:3800,desc:"Cushioning tinggi"},
-  {id:"BE2",wall:"double",flute:"BE-Flute",caliper:4.8,ECT:6.5,grammage:780,costM2:32000,bst:5200,desc:"Ringan, proteksi sedang"},
-  {id:"BC2",wall:"double",flute:"BC-Flute",caliper:6.5,ECT:8.0,grammage:900,costM2:38000,bst:7500,desc:"Standar industri ekspor"},
-  {id:"AC2",wall:"double",flute:"AC-Flute",caliper:8.0,ECT:9.5,grammage:1050,costM2:42000,bst:8800,desc:"Heavy-duty distribusi"},
-  {id:"AB2",wall:"double",flute:"AB-Flute",caliper:8.5,ECT:10.2,grammage:1120,costM2:45000,bst:9600,desc:"Proteksi maksimal"},
-  {id:"BCB3",wall:"triple",flute:"BCB-Flute",caliper:10.0,ECT:11.5,grammage:1200,costM2:52000,bst:12500,desc:"Medium heavy-duty"},
-  {id:"ACA3",wall:"triple",flute:"ACA-Flute",caliper:12.7,ECT:14.0,grammage:1400,costM2:62000,bst:16000,desc:"Pengganti kayu, ekspor"},
-  {id:"AAA3",wall:"triple",flute:"AAA-Flute",caliper:15.0,ECT:16.5,grammage:1650,costM2:72000,bst:19500,desc:"Ultra heavy-duty"},
+  {id:"E1",wall:"single",flute:"E-Flute",caliper:1.6,ECT:2.8,grammage:380,costM2:16000,bst:1800,desc:"Tipis, display packaging",avail:4,availTag:"Tersedia",std:"FEFCO/TAPPI/SNI"},
+  {id:"B1",wall:"single",flute:"B-Flute",caliper:2.5,ECT:3.6,grammage:450,costM2:18500,bst:2400,desc:"Serbaguna, die-cutting baik",avail:5,availTag:"Sangat Mudah",std:"FEFCO/TAPPI/SNI"},
+  {id:"C1",wall:"single",flute:"C-Flute",caliper:3.66,ECT:4.4,grammage:550,costM2:22000,bst:3200,desc:"Standar distribusi",avail:5,availTag:"Sangat Mudah",std:"FEFCO/TAPPI/SNI"},
+  {id:"A1",wall:"single",flute:"A-Flute",caliper:4.8,ECT:5.2,grammage:630,costM2:25000,bst:3800,desc:"Cushioning tinggi",avail:3,availTag:"Cukup",std:"FEFCO/TAPPI/SNI"},
+  {id:"BE2",wall:"double",flute:"BE-Flute",caliper:4.8,ECT:6.5,grammage:780,costM2:32000,bst:5200,desc:"Ringan, proteksi sedang",avail:3,availTag:"Cukup",std:"FEFCO/SNI"},
+  {id:"BC2",wall:"double",flute:"BC-Flute",caliper:6.5,ECT:8.0,grammage:900,costM2:38000,bst:7500,desc:"Standar industri ekspor",avail:4,availTag:"Tersedia",std:"FEFCO/SNI"},
+  {id:"AC2",wall:"double",flute:"AC-Flute",caliper:8.0,ECT:9.5,grammage:1050,costM2:42000,bst:8800,desc:"Heavy-duty distribusi",avail:3,availTag:"Cukup",std:"FEFCO"},
+  {id:"AB2",wall:"double",flute:"AB-Flute",caliper:8.5,ECT:10.2,grammage:1120,costM2:45000,bst:9600,desc:"Proteksi maksimal",avail:2,availTag:"Terbatas",std:"FEFCO"},
+  {id:"BCB3",wall:"triple",flute:"BCB-Flute",caliper:10.0,ECT:11.5,grammage:1200,costM2:52000,bst:12500,desc:"Medium heavy-duty",avail:2,availTag:"Terbatas",std:"Tri-Wall"},
+  {id:"ACA3",wall:"triple",flute:"ACA-Flute",caliper:12.7,ECT:14.0,grammage:1400,costM2:62000,bst:16000,desc:"Pengganti kayu, ekspor",avail:1,availTag:"Sangat Terbatas",std:"Tri-Wall"},
+  {id:"AAA3",wall:"triple",flute:"AAA-Flute",caliper:15.0,ECT:16.5,grammage:1650,costM2:72000,bst:19500,desc:"Ultra heavy-duty",avail:1,availTag:"Sangat Terbatas",std:"Tri-Wall"},
 ];
 const BOX_SIZES=[
   {id:0,tag:"S",name:"Kecil",L:300,W:200,H:100},
@@ -308,6 +324,7 @@ let S={
   humidity:0.60,           // humidity correction factor (0.5-0.9)
   tempDeltaT:3,            // allowed temperature rise °C (for resp-based vent)
   showSensitivity:false,   // sensitivity analysis toggle
+  showDurasi:false,        // durasi simpan toggle
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -590,14 +607,14 @@ function renderSidebar(){
   for(const m of MATERIALS.filter(m=>m.wall===S.wallFilter)){
     const a=m.id===S.matId;
     const wt2=WALL_TYPES.find(w=>w.id===m.wall);
-    h+=`<button class="mat-btn${a?' active':''}" onclick="upd('matId','${m.id}')"><div><div style="font-size:11px;font-weight:600;color:${a?wt2.color:'var(--t1)'}">${m.flute}</div><div style="font-size:9px;color:var(--t3)">${m.desc}</div></div><div style="text-align:right" class="mono"><div style="font-size:11px;font-weight:600;color:${a?wt2.color:'var(--t2)'}">${m.caliper} mm</div><div style="font-size:9px;color:var(--t3)">ECT ${m.ECT}</div></div></button>`;
+    h+=`<button class="mat-btn${a?' active':''}" onclick="upd('matId','${m.id}')"><div><div style="font-size:11px;font-weight:600;color:${a?wt2.color:'var(--t1)'}">${m.flute} <span class="avail-badge avail-${m.avail}">${m.avail>=4?'🇮🇩':''}${m.availTag}</span></div><div style="font-size:9px;color:var(--t3)">${m.desc}</div></div><div style="text-align:right" class="mono"><div style="font-size:11px;font-weight:600;color:${a?wt2.color:'var(--t2)'}">${m.caliper} mm</div><div style="font-size:9px;color:var(--t3)">ECT ${m.ECT}</div></div></button>`;
   }
   h+=`</div>`;
   // Cross-section
   h+=renderCrossSection(mat);
   // Mat props
   h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px;font-size:9px">`;
-  const props=[['Caliper',`${mat.caliper} mm`,wt.color],['ECT',`${mat.ECT} kN/m`,'var(--accent)'],['Grammage',`${mat.grammage} g/m²`,'var(--t1)'],['BST',`${mat.bst} N`,'var(--blue)'],['Harga',`Rp ${fN(mat.costM2)}/m²`,'var(--orange)'],['Tipe',mat.wall==='single'?'1 Fluting':mat.wall==='double'?'2 Fluting':'3 Fluting','var(--purple)']];
+  const props=[['Caliper',`${mat.caliper} mm`,wt.color],['ECT',`${mat.ECT} kN/m`,'var(--accent)'],['Grammage',`${mat.grammage} g/m²`,'var(--t1)'],['BST',`${mat.bst} N`,'var(--blue)'],['Harga',`Rp ${fN(mat.costM2)}/m²`,'var(--orange)'],['Tipe',mat.wall==='single'?'1 Fluting':mat.wall==='double'?'2 Fluting':'3 Fluting','var(--purple)'],['Standar',mat.std,'var(--cyan)'],['🇮🇩 Ketersediaan',mat.availTag,mat.avail>=4?'var(--accent)':mat.avail>=3?'var(--warn)':'var(--danger)']];
   for(const[l,v,c] of props) h+=`<div style="padding:5px 8px;border-radius:5px;background:var(--input);border:1px solid var(--border)"><div style="color:var(--t3);font-size:8px;text-transform:uppercase">${l}</div><div style="color:${c};font-weight:600;font-family:'JetBrains Mono',monospace;margin-top:1px">${v}</div></div>`;
   h+=`</div>`;
   // BOX SIZE removed from sidebar — now in main area next to isometric
@@ -679,6 +696,11 @@ function renderMain(){
   h+=specRow('Ukuran Box',`${box.L}×${box.W}×${box.H} mm (${box.tag})`);
   h+=specRow('Tipe Dinding',`${wt.label} — ${mat.flute}`,wt.color);
   h+=specRow('Tebal / ECT / Grammage',`${mat.caliper} mm / ${mat.ECT} kN/m / ${mat.grammage} g/m²`);
+  h+=`<div class="spec-section" style="color:var(--cyan)">Standar & Ketersediaan Indonesia</div>`;
+  h+=specRow('Standar Acuan',mat.std,'var(--cyan)');
+  h+=specRow('Regulasi',mat.wall==='triple'?'Tri-Wall License':'SNI 14-1439-1998 + SNI 8218:2024','var(--t2)');
+  h+=specRow('🇮🇩 Ketersediaan',`<span class="avail-badge avail-${mat.avail}" style="font-size:10px">${mat.availTag}</span> (${'★'.repeat(mat.avail)}${'☆'.repeat(5-mat.avail)})`,mat.avail>=4?'var(--accent)':mat.avail>=3?'var(--warn)':'var(--danger)');
+  h+=specRow('Supplier',mat.avail>=4?'Umum — tersedia di hampir semua pabrik corrugated':mat.avail>=3?'Tersedia dari pabrik terintegrasi':mat.avail>=2?'Custom order — pabrik besar':mat.avail>=1?'PT Tri-Wall Indonesia (khusus)':'Sangat terbatas','var(--t2)');
   // Ventilation
   h+=`<div class="spec-section" style="color:var(--cyan)">Parameter Ventilasi (Respiration-Driven)</div>`;
   h+=specRow('Laju Respirasi',`${S.resp} mL CO₂/kg·jam`,S.resp>=30?'var(--orange)':'var(--accent)');
@@ -745,6 +767,69 @@ function renderMain(){
     }
   }
   h+=`</div>`;
+  // ── DURASI SIMPAN & REKOMENDASI TUMPUKAN PER STAKEHOLDER ──
+  h+=`<div class="compare-section"><button class="compare-toggle" onclick="S.showDurasi=!S.showDurasi;render()"><span style="font-weight:600">📅 Durasi Simpan & Rekomendasi Tumpukan</span><span>${S.showDurasi?'Sembunyikan ▴':'Tampilkan ▾'}</span></button>`;
+  if(S.showDurasi){
+    const durations=[
+      {days:1,label:'1 hari',stakeholder:'Petani → Pasar lokal',icon:'🌾'},
+      {days:3,label:'3 hari',stakeholder:'Transit antar-kota',icon:'🚚'},
+      {days:7,label:'7 hari',stakeholder:'Distributor regional',icon:'🏪'},
+      {days:14,label:'14 hari',stakeholder:'Cold storage / supermarket',icon:'❄️'},
+      {days:30,label:'30 hari',stakeholder:'Ekspor laut / gudang',icon:'🚢'},
+      {days:60,label:'60 hari',stakeholder:'Long-term warehouse',icon:'🏭'},
+      {days:90,label:'90 hari',stakeholder:'Extended storage',icon:'📦'},
+    ];
+    h+=`<div class="compare-body">`;
+    h+=`<div style="margin-bottom:10px;font-size:11px;color:var(--t2)">Creep model: CF = 0.80 × hari<sup>−0.069</sup> (Nordstrand 2003) | Material: <b style="color:var(--accent)">${mat.flute}</b> | Transport: <b>${transport.label}</b> (×${transport.factor})</div>`;
+    h+=`<table class="durasi-table"><thead><tr><th>Durasi</th><th>Creep Factor</th><th>BCT Eff (N)</th><th>Retensi (%)</th><th>Maks Tumpuk</th><th>Status</th><th>Stakeholder</th></tr></thead><tbody>`;
+    for(const dur of durations){
+      const cfgD={...cfg,storageDays:dur.days};
+      const{opt:optD}=optimize(box,mat,S.wt,S.stack,S.maxDia,S.resp,cfgD);
+      if(!optD)continue;
+      const cf=creepFactor(dur.days);
+      const retention=(optD.bctEff/opt.bctBase*100);
+      const isCurrent=dur.days===S.storageDays;
+      const sfCol=sfColor(optD.sf);
+      const status=optD.sf>=2?'✅ Aman':optD.sf>=1.5?'⚠️ Hati-hati':'❌ Tidak aman';
+      h+=`<tr${isCurrent?' class="durasi-highlight"':''}>`;
+      h+=`<td style="font-weight:${isCurrent?700:400};color:${isCurrent?'var(--accent)':'var(--t1)'}">${dur.label}${isCurrent?' ◀':''}</td>`;
+      h+=`<td>${cf.toFixed(3)}</td>`;
+      h+=`<td style="color:${sfCol}">${fN(optD.bctEff,0)}</td>`;
+      h+=`<td style="color:${retention>60?'var(--accent)':retention>40?'var(--warn)':'var(--danger)'}">${retention.toFixed(1)}%</td>`;
+      h+=`<td style="color:var(--accent);font-weight:700">${optD.maxStack}</td>`;
+      h+=`<td style="color:${sfCol}">${status}</td>`;
+      h+=`<td class="stakeholder">${dur.icon} ${dur.stakeholder}</td>`;
+      h+=`</tr>`;
+    }
+    h+=`</tbody></table>`;
+    // Practical recommendations box
+    h+=`<div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px">`;
+    const stakeRecs=[
+      {icon:'🌾',title:'Petani',days:'1-3',desc:'Panen → pasar lokal. Tumpuk maks kolom, hindari interlock.',color:'var(--accent)'},
+      {icon:'🚚',title:'Distributor',days:'3-14',desc:'Transit + cold storage. Perhatikan humidity factor & pola tumpuk.',color:'var(--blue)'},
+      {icon:'🏪',title:'Retailer',days:'1-7',desc:'Display di rak. Tumpuk rendah (≤4), ventilasi prioritas.',color:'var(--warn)'},
+      {icon:'🚢',title:'Ekspor',days:'14-30',desc:'Kapal laut (×2.2). Gunakan double wall min. BCT retensi <50%.',color:'var(--orange)'},
+    ];
+    for(const sr of stakeRecs){
+      const cfEnd=creepFactor(parseInt(sr.days.split('-')[1]||sr.days));
+      const cfgSR={...cfg,storageDays:parseInt(sr.days.split('-')[1]||sr.days)};
+      const{opt:optSR}=optimize(box,mat,S.wt,S.stack,S.maxDia,S.resp,cfgSR);
+      h+=`<div style="background:var(--input);border:1px solid var(--border);border-radius:8px;padding:10px">`;
+      h+=`<div style="font-size:12px;font-weight:700;color:${sr.color};margin-bottom:4px">${sr.icon} ${sr.title} (${sr.days} hari)</div>`;
+      h+=`<div style="font-size:10px;color:var(--t2);margin-bottom:6px">${sr.desc}</div>`;
+      if(optSR){
+        h+=`<div style="font-size:10px;display:grid;grid-template-columns:1fr 1fr;gap:2px">`;
+        h+=`<div>CF: <span class="mono" style="color:var(--cyan)">${cfEnd.toFixed(3)}</span></div>`;
+        h+=`<div>BCT: <span class="mono" style="color:${sfColor(optSR.sf)}">${fN(optSR.bctEff,0)}N</span></div>`;
+        h+=`<div>Maks: <span class="mono" style="color:var(--accent)">${optSR.maxStack} lapis</span></div>`;
+        h+=`<div>SF: <span class="mono" style="color:${sfColor(optSR.sf)}">${fN(optSR.sf,2)}</span></div>`;
+        h+=`</div>`;
+      }
+      h+=`</div>`;
+    }
+    h+=`</div></div>`;
+  }
+  h+=`</div>`;
   // COMPARE
   h+=`<div class="compare-section"><button class="compare-toggle" onclick="S.showCompare=!S.showCompare;render()"><span style="font-weight:600">📊 Perbandingan 11 Material</span><span>${S.showCompare?'Sembunyikan ▴':'Tampilkan ▾'}</span></button>`;
   if(S.showCompare){
@@ -752,7 +837,7 @@ function renderMain(){
     h+=`<div class="compare-body"><table class="cmp-table"><thead><tr><th>Parameter</th>`;
     for(const c of cmp)h+=`<th style="color:${WALL_TYPES.find(w=>w.id===c.mat.wall).color}">${c.mat.flute}</th>`;
     h+=`</tr></thead><tbody>`;
-    h+=cmpSection('PROPERTI');h+=cmpRow('Caliper (mm)',cmp.map(c=>fN(c.mat.caliper,2)));h+=cmpRow('ECT (kN/m)',cmp.map(c=>fN(c.mat.ECT,1)));h+=cmpRow('BST (N)',cmp.map(c=>fN(c.mat.bst)));
+    h+=cmpSection('PROPERTI');h+=cmpRow('Caliper (mm)',cmp.map(c=>fN(c.mat.caliper,2)));h+=cmpRow('ECT (kN/m)',cmp.map(c=>fN(c.mat.ECT,1)));h+=cmpRow('BST (N)',cmp.map(c=>fN(c.mat.bst)));h+=cmpRow('🇮🇩 Ketersediaan',cmp.map(c=>`<span class="avail-badge avail-${c.mat.avail}">${c.mat.availTag}</span>`));
     h+=cmpSection('KINERJA');h+=cmpRow('BCT Eff (N)',cmp.map(c=>c.opt?fN(c.opt.bctEff,0):'-'));h+=cmpRow('SF',cmp.map(c=>c.opt?`<span class="${sfClass(c.opt.sf)}">${fN(c.opt.sf,2)}</span>`:'-'));h+=cmpRow('Burst SF',cmp.map(c=>c.opt?fN(c.opt.burstSF,1):'-'));h+=cmpRow('Maks Tumpuk',cmp.map(c=>c.opt?c.opt.maxStack:'-'));
     h+=cmpSection('BIAYA');h+=cmpRow('Kemasan',cmp.map(c=>c.opt?fN(c.opt.totalCost):'-'));h+=cmpRow('Kerugian',cmp.map(c=>c.opt?fN(c.opt.lossCost):'-'));
     h+=cmpRow('<b>TCI (Rp)</b>',cmp.map((c,i)=>{if(!c.opt)return'-';const v=fN(c.opt.tci);return costs[i]===minCost?`<span class="cost-best">${v} ✓</span>`:`<b>${v}</b>`}));
@@ -766,7 +851,14 @@ function renderMain(){
   h+=footerCol('🛡 Struktural',[['BCT Eff',`${fN(opt.bctEff,0)} N`],['F Total',`${fN(opt.appForce,0)} N`],['SF',`${fN(opt.sf,2)}`],['Creep',`${opt.cF.toFixed(3)}`]]);
   h+=footerCol('💰 Biaya',[['Kemasan',fRp(opt.totalCost)],['Kerugian',fRp(opt.lossCost)],['<b>TCI</b>',`<b style="color:var(--orange)">${fRp(opt.tci)}</b>`]]);
   h+=`</div>`;
-  h+=`<div style="text-align:center;padding:12px;font-size:10px;color:var(--t3)">HORTI-PACK OPTIMIZER v3.0 OFFLINE © 2026 · IPB University · Disertasi Doktoral Iip</div>`;
+  h+=`<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;font-size:10px;color:var(--t3)">`;
+  h+=`<span>📋 <b style="color:var(--cyan)">SNI 14-1439-1998</b> Spesifikasi Karton Gelombang</span>`;
+  h+=`<span>📋 <b style="color:var(--cyan)">SNI 8218:2024</b> Kemasan Pangan (Wajib 2025)</span>`;
+  h+=`<span>📋 <b style="color:var(--cyan)">FEFCO</b> European Standards</span>`;
+  h+=`<span>📋 <b style="color:var(--cyan)">TAPPI T 810/811</b> BST & ECT</span>`;
+  h+=`<span>📋 <b style="color:var(--cyan)">ISO 3034/3037</b> Board Thickness & ECT</span>`;
+  h+=`</div>`;
+  h+=`<div style="text-align:center;padding:12px;font-size:10px;color:var(--t3)">HORTI-PACK OPTIMIZER v3.1 © 2026 · IPB University · Disertasi Doktoral Iip · SNI/FEFCO/TAPPI Compliant</div>`;
   document.getElementById('mainArea').innerHTML=h;
   setTimeout(()=>drawChart(sweep,opt),50);
 }
